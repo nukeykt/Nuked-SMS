@@ -72,11 +72,24 @@ typedef struct {
     int w53;
     int w54;
     int w55[2];
+    int w56;
+    int w57;
+    int w58;
+    int w59;
+    int w60;
+    int w61;
+    int w62;
+    int w63;
+    int w64;
+    int w65;
+    int w66;
 
     int reg_addr;
 
     int vram_data;
     int vram_address;
+
+    int cpu_data;
 
     int clk1;
     int clk2;

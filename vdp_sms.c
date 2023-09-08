@@ -206,4 +206,49 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     chip->w56 = !(chip->w52 || !chip->tm_w1 || chip->w49 != 0);
 
+    if (chip->hclk1)
+        chip->w57 = !chip->tm_w1;
+    if (chip->hclk2)
+        chip->w58 = chip->w57;
+
+    chip->w59 = chip->w58 ? chip->hclk1 : 0;
+
+    if (chip->w59)
+        chip->w60 = chip->tm_w1 & 255;
+    else if (chip->hclk2)
+        chip->w60 = chip->w60;
+
+    if (!chip->tm_w2)
+    {
+        chip->cpu_data = chip->tm_w1 ? chip->w60 : chip->tm_w3;
+    }
+
+    if (chip->hclk1)
+        chip->w62 = (chip->tm_w3 || chip->tm_w4) ? 0 : ((chip->w63 + chip->tm_w1) & 255);
+    if (chip->hclk2)
+        chip->w63 = chip->w62 | (chip->w65 & chip->w66);
+
+    if (chip->tm_w1)
+        chip->w64 = chip->w63;
+
+    if (chip->hclk1)
+        chip->w65 = chip->w64;
+    if (chip->hclk1)
+        chip->w66 = chip->tm_w1 ? 255 : 0;
+
+    if (chip->tm_w1)
+    {
+        chip->vram_address &= ~0x3e;
+        chip->vram_address |= (chip->w63 << 1) & 0x3e;
+    }
+    if (chip->tm_w2)
+    {
+        chip->vram_address &= ~0x7c;
+        chip->vram_address |= (chip->w63 << 2) & 0x7c;
+    }
+    if (chip->tm_w3)
+    {
+        chip->vram_address &= ~0x380;
+        chip->vram_address |= (chip->w63 << 2) & 0x380;
+    }
 }

@@ -179,4 +179,31 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     if (chip->clk2)
         chip->w48 = chip->w44[1];
+
+    if (chip->tm_w1)
+        chip->reg_hit = 0;
+    else if (!chip->tm_w2)
+        chip->reg_hit = (chip->reg_addr & 255) ^ 255;
+
+    chip->w49 = (chip->w53 ? chip->reg_hit : chip->w51) ^ 255;
+
+    if (chip->hclk1)
+        chip->w50 = chip->w49;
+    if (chip->hclk2)
+        chip->w51 = ((chip->w50 ^ 255) + !chip->w54) & 255;
+
+    chip->w52 = !(chip->tm_w1 || chip->tm_w2);
+
+    chip->w53 = chip->w52 || chip->w55[1];
+
+    if (chip->hclk1)
+        chip->w54 = !chip->tm_w1;
+
+    if (chip->hclk1)
+        chip->w55[0] = chip->w56;
+    if (chip->hclk2)
+        chip->w55[1] = chip->w55[0];
+
+    chip->w56 = !(chip->w52 || !chip->tm_w1 || chip->w49 != 0);
+
 }

@@ -64,6 +64,16 @@ typedef struct {
     int w46;
     int w47;
     int w48;
+    int reg_hit;
+    int w49;
+    int w50;
+    int w51;
+    int w52;
+    int w53;
+    int w54;
+    int w55[2];
+
+    int reg_addr;
 
     int vram_data;
     int vram_address;

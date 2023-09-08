@@ -8,8 +8,12 @@ typedef struct {
 typedef struct {
     vdpsms_input_t input;
 
-    int ad_o;
-    int ad_o_z;
+    int o_ad;
+    int o_ad_z;
+    int o_oe;
+    int o_we0;
+    int o_we1;
+    int o_ce;
 
     int w1;
     int w2_h;
@@ -19,12 +23,32 @@ typedef struct {
     int w5;
     int w6;
     int w7;
+    int w8;
+    int w9;
+    int w10;
+    int w11;
+    int w12;
+    int w13;
+    int w14;
+    int w15;
+    int w16;
+    int w17;
+    int w18;
+    int w19;
+    int w20;
+    int w21;
+    int w22[2];
+    int w23;
+    int w24;
 
     int vram_data;
     int vram_address;
 
     int clk1;
     int clk2;
+
+    int hclk1;
+    int hclk2;
 
     int tm_w1;
     int tm_w2;

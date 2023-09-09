@@ -83,6 +83,34 @@ typedef struct {
     int w64;
     int w65;
     int w66;
+    int w67;
+    int w68;
+    int w69;
+    int w70;
+    int w71;
+    int w72;
+    int w73;
+    int w74;
+    int w75;
+    int w76;
+    int w77;
+    int w78;
+    int w79;
+    int w80;
+    int w81;
+    int w82;
+    int w83;
+    int w84;
+    int w85[2];
+    int w86;
+    int w87[2];
+    int w88;
+    int w89[2];
+    int w90[2];
+    int w91;
+    int w92;
+    int w93;
+    int w94;
 
     int reg_addr;
 

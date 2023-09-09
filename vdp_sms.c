@@ -224,11 +224,11 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     }
 
     if (chip->hclk1)
-        chip->w62 = (chip->tm_w3 || chip->tm_w4) ? 0 : ((chip->w63 + chip->tm_w1) & 255);
+        chip->w62 = (chip->w74 || chip->w80) ? 0 : ((chip->w63 + chip->w76) & 255);
     if (chip->hclk2)
         chip->w63 = chip->w62 | (chip->w65 & chip->w66);
 
-    if (chip->tm_w1)
+    if (chip->w81)
         chip->w64 = chip->w63;
 
     if (chip->hclk1)
@@ -236,19 +236,100 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     if (chip->hclk1)
         chip->w66 = chip->tm_w1 ? 255 : 0;
 
-    if (chip->tm_w1)
+    chip->w67 = chip->w85[1] ? ((chip->w63 >> 5) & 3) : 0;
+
+    if (chip->w83)
     {
-        chip->vram_address &= ~0x3e;
+        chip->vram_address &= ~0xfe;
         chip->vram_address |= (chip->w63 << 1) & 0x3e;
+        chip->vram_address |= (chip->w67 << 6) & 0xc0;
     }
     if (chip->tm_w2)
     {
         chip->vram_address &= ~0x7c;
         chip->vram_address |= (chip->w63 << 2) & 0x7c;
     }
-    if (chip->tm_w3)
+    if (chip->w88)
     {
         chip->vram_address &= ~0x380;
         chip->vram_address |= (chip->w63 << 2) & 0x380;
     }
+
+    if (chip->hclk1)
+        chip->w68 = !chip->tm_w1;
+    if (chip->hclk2)
+        chip->w69 = !chip->w68;
+    if (chip->hclk1)
+        chip->w70 = chip->w69;
+    if (chip->hclk2)
+        chip->w71 = !(chip->w70 || chip->w68);
+
+    chip->w72 = !(chip->w71 || chip->tm_w1 || (chip->tm_w2 && chip->tm_w3));
+
+    if (chip->hclk1)
+        chip->w73 = chip->w72;
+    if (chip->hclk2)
+        chip->w74 = !chip->w73;
+
+    chip->w75 = !(chip->w77 ? chip->w78 : chip->w79);
+
+    if (chip->hclk2)
+        chip->w76 = !chip->w75;
+
+    if (chip->hclk2)
+        chip->vram_address = 0x3fff;
+
+    if (chip->hclk1)
+        chip->w77 = chip->tm_w1;
+    if (chip->hclk1)
+        chip->w78 = chip->tm_w1;
+    if (chip->hclk1)
+        chip->w79 = chip->w94;
+
+    chip->w80 = !(chip->tm_w1 || !chip->tm_w2);
+
+    chip->w81 = chip->tm_w1;
+
+    if (chip->hclk2)
+        chip->w82 = chip->tm_w1;
+    chip->w83 = chip->w82 ? chip->hclk1 : 0;
+
+    if (chip->hclk1)
+        chip->w84 = !(!chip->tm_w1 || chip->tm_w2);
+
+    if (chip->hclk1)
+        chip->w85[0] = chip->tm_w1;
+    if (chip->hclk2)
+        chip->w85[1] = chip->w85[0];
+
+    chip->w86 = !(chip->tm_w1 || !chip->tm_w2);
+
+    if (chip->hclk1)
+        chip->w87[0] = w86;
+    if (chip->hclk2)
+        chip->w87[1] = chip->w87[0];
+
+    chip->w88 = chip->w87[1] ? chip->hclk1 : 0;
+
+    if (chip->hclk1)
+        chip->w89[0] = chip->tm_w1;
+    if (chip->hclk2)
+        chip->w89[1] = chip->w89[0];
+
+    if (chip->hclk1)
+        chip->w90[0] = chip->w74 ? 0 : ((chip->w90[1] + chip->w89[1]) & 3);
+    if (chip->hclk2)
+        chip->w90[1] = chip->w90[0];
+
+    if (chip->tm_w1)
+    {
+        chip->vram_address &= ~3;
+        chip->vram_address |= chip->w90[1] & 3;
+    }
+
+    chip->w91 = !((chip->w90[1] & 1) != 0 || (chip->w90[1] & 2) == 0 || !chip->w89[1]);
+    chip->w92 = !((chip->w90[1] & 1) == 0 || (chip->w90[1] & 2) == 0 || !chip->w89[1]);
+
+    chip->w93 = chip->w91;
+    chip->w94 = chip->w93;
 }

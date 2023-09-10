@@ -476,7 +476,7 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     if (chip->hclk1)
         chip->w131[1] = chip->w131[0];
 
-    if (chip->tm_w1)
+    if (chip->w140)
     {
         chip->vram_address &= ~0x7c;
         chip->vram_address |= (chip->w131[0] & 0x3e) << 1;
@@ -502,9 +502,59 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     if (chip->hclk1)
         chip->w135[1] = chip->w135[0];
 
-    if (chip->tm_w1)
+    if (chip->w137)
     {
         chip->vram_address &= ~0x7e;
         chip->vram_address |= (chip->w135[0] & 0x3f) << 1;
     }
+
+    if (chip->hclk2)
+        chip->w136 = chip->tm_w1;
+    chip->w137 = chip->w136 ? chip->hclk1 : 0;
+
+    if (chip->hclk1)
+        chip->w138 = chip->tm_w1 && !chip->tm_w2;
+    if (chip->hclk2)
+        chip->w139 = chip->w138;
+    chip->w140 = chip->w139 ? chip->hclk1 : 0;
+
+    if (chip->hclk1)
+        chip->w141 = chip->tm_w1;
+
+    if (chip->hclk2)
+    {
+        chip->w142 = chip->tm_w1 ? 0 : ((chip->w143 + chip->w141) & 511);
+        chip->w144 = chip->tm_w1;
+    }
+    {
+        int loadval = 0;
+        loadval |= 256 + 128 + 16;
+        if (chip->cpu_pal)
+            loadval |= 32 + 8 + 2;
+        else
+            loadval |= 64 + 4 + 1;
+        chip->w145 = chip->w142 | (chip->w144 ? loadval : 0);
+    }
+    if (chip->hclk1)
+        chip->w143 = chip->w145;
+
+    if (chip->hclk1)
+    {
+        chip->v_pla[0] = (chip->w145 & 0x107) == 0x7;
+        chip->v_pla[1] = chip->cpu_pal && chip->w145 == 0x1bd;
+        chip->v_pla[2] = !chip->cpu_pal && chip->w145 == 0x1d8;
+        chip->v_pla[3] = chip->cpu_pal && chip->w145 == 0x1ba;
+        chip->v_pla[4] = !chip->cpu_pal && chip->w145 == 0x1d5;
+        chip->v_pla[5] = chip->cpu_pal && chip->w145 == 0x1ca;
+        chip->v_pla[6] = !chip->cpu_pal && chip->w145 == 0x1e5;
+        chip->v_pla[7] = chip->cpu_pal && chip->w145 == 0xf0;
+        chip->v_pla[8] = !chip->cpu_pal && chip->w145 == 0xd8;
+        chip->v_pla[9] = chip->w145 == 0xc0;
+        chip->v_pla[10] = chip->w145 == 0x0;
+        chip->v_pla[11] = chip->w145 == 0x1ff;
+        chip->v_pla[12] = chip->cpu_pal && chip->w145 == 0xf2;
+        chip->v_pla[13] = !chip->cpu_pal && chip->w145 == 0xda;
+    }
+
+    chip->cpu_pal = chip->tm_w1;
 }

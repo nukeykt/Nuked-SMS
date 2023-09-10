@@ -152,6 +152,19 @@ typedef struct {
     int w133[2];
     int w134[2];
     int w135[2];
+    int w136;
+    int w137;
+    int w138;
+    int w139;
+    int w140;
+    int w141;
+    int w142;
+    int w143;
+    int w144;
+    int w145; // v counter
+    int v_pla[14];
+
+    int cpu_pal;
 
     int reg_addr;
 

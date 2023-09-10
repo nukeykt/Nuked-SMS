@@ -232,6 +232,13 @@ typedef struct {
     int w209;
     int w210;
     int w211;
+    int w212;
+    int w213;
+    int w214;
+    int w215[2];
+    int w216;
+    int w217;
+    int reg_sel[11];
 
     int cpu_pal;
     int cpu_rd;
@@ -241,7 +248,10 @@ typedef struct {
     int cpu_a6;
     int cpu_a7;
 
+    int io_data;
+
     int reg_addr;
+    int reg_code;
 
     int vram_data;
     int vram_address;
@@ -253,6 +263,31 @@ typedef struct {
 
     int hclk1;
     int hclk2;
+
+    int reset1;
+
+    int reg_80_b0;
+    int reg_80_b1;
+    int reg_80_b2;
+    int reg_80_b3;
+    int reg_80_b4;
+    int reg_80_b5;
+    int reg_80_b6;
+    int reg_80_b7;
+
+    int reg_81_b0;
+    int reg_81_b1;
+    int reg_81_b2;
+    int reg_81_b3;
+    int reg_81_b4;
+    int reg_81_b5;
+    int reg_81_b6;
+
+    int reg_nt;
+    int reg_ct;
+    int reg_bg;
+    int reg_sat;
+    int reg_spr;
 
     int tm_w1;
     int tm_w2;

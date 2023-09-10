@@ -721,7 +721,7 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     if (chip->hclk2)
         chip->w194[1] = chip->w194[0];
 
-    chip->w195 = !(!chip->w192 || chip->tm_w2 || chip->w184 || chip->tm_w4);
+    chip->w195 = chip->w192 && chip->reg_code == 0 && !chip->w184;
 
     if (chip->w195 || chip->w180 || chip->w171)
         chip->w196 = 0;
@@ -780,7 +780,178 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     chip->w210 = !(chip->w194[1] || chip->w193[1]);
 
-    chip->w211 = !(chip->tm_w1 || !chip->tm_w2 || chip->w184 || chip->w210);
+    chip->w211 = chip->reg_code == 2 && !chip->w184 && !chip->w210;
 
-    chip->w212 = !(chip->tm_w1 || chip->tm_w2);
+    chip->w212 = chip->reg_code != 3;
+
+    if (!chip->w183)
+    {
+        chip->w214 = chip->w213 = chip->io_data & 255;
+    }
+    else
+    {
+        int i;
+        int bit = chip->w215[1];
+        for (i = 0; i < 8; i++)
+        {
+            int shift = 1 << i;
+            if (bit)
+            {
+                chip->w213 &= ~shift;
+                chip->w213 |= (chip->w214 & shift) ^ shift;
+            }
+            else
+            {
+                chip->w214 &= ~shift;
+                chip->w214 |= chip->w213 & shift;
+            }
+            bit = (chip->w214 >> i) & 1;
+        }
+    }
+
+    if (chip->hclk1)
+        chip->w215[0] = chip->w203;
+    if (chip->hclk2)
+        chip->w215[1] = chip->w215[0];
+
+    if (!chip->w182)
+    {
+        chip->w217 = chip->w216 = chip->io_data & 63;
+        chip->reg_code = (chip->io_data >> 6) & 3;
+    }
+    else
+    {
+        int i;
+        int bit = (chip->w214 >> 7) & 1;
+        for (i = 0; i < 6; i++)
+        {
+            int shift = 1 << i;
+            if (bit)
+            {
+                chip->w216 &= ~shift;
+                chip->w216 |= (chip->w217 & shift) ^ shift;
+            }
+            else
+            {
+                chip->w217 &= ~shift;
+                chip->w217 |= chip->w216 & shift;
+            }
+            bit = (chip->w217 >> i) & 1;
+        }
+    }
+
+    chip->reg_addr = (chip->w217 << 8) | chip->w214;
+
+    chip->reg_sel[0] = (chip->reg_addr & 0xf00) == 0x000 && chip->w211;
+    chip->reg_sel[1] = (chip->reg_addr & 0xf00) == 0x100 && chip->w211;
+    chip->reg_sel[2] = (chip->reg_addr & 0xf00) == 0x200 && chip->w211;
+    chip->reg_sel[3] = (chip->reg_addr & 0xf00) == 0x300 && chip->w211;
+    chip->reg_sel[4] = (chip->reg_addr & 0xf00) == 0x400 && chip->w211;
+    chip->reg_sel[5] = (chip->reg_addr & 0xf00) == 0x500 && chip->w211;
+    chip->reg_sel[6] = (chip->reg_addr & 0xf00) == 0x600 && chip->w211;
+    chip->reg_sel[7] = (chip->reg_addr & 0xf00) == 0x700 && chip->w211;
+    chip->reg_sel[8] = (chip->reg_addr & 0xf00) == 0x800 && chip->w211;
+    chip->reg_sel[9] = (chip->reg_addr & 0xf00) == 0x900 && chip->w211;
+    chip->reg_sel[10] = (chip->reg_addr & 0xf00) == 0xa00 && chip->w211;
+
+    chip->reset1 = chip->tm_w1;
+
+    if (chip->reg_sel[0])
+    {
+        chip->reg_80_b0 = (chip->reg_addr >> 0) & 1;
+        chip->reg_80_b1 = (chip->reg_addr >> 1) & 1;
+        chip->reg_80_b2 = (chip->reg_addr >> 2) & 1;
+        chip->reg_80_b3 = (chip->reg_addr >> 3) & 1;
+        chip->reg_80_b4 = (chip->reg_addr >> 4) & 1;
+        chip->reg_80_b5 = (chip->reg_addr >> 5) & 1;
+        chip->reg_80_b6 = (chip->reg_addr >> 6) & 1;
+        chip->reg_80_b7 = (chip->reg_addr >> 7) & 1;
+    }
+    else if (chip->reset1)
+    {
+        chip->reg_80_b0 = 0;
+        chip->reg_80_b1 = 0;
+        chip->reg_80_b2 = 0;
+        chip->reg_80_b3 = 0;
+        chip->reg_80_b4 = 0;
+        chip->reg_80_b5 = 0;
+        chip->reg_80_b6 = 0;
+        chip->reg_80_b7 = 0;
+    }
+
+    if (chip->reg_sel[1])
+    {
+        chip->reg_81_b0 = (chip->reg_addr >> 0) & 1;
+        chip->reg_81_b1 = (chip->reg_addr >> 1) & 1;
+        chip->reg_81_b2 = (chip->reg_addr >> 2) & 1;
+        chip->reg_81_b3 = (chip->reg_addr >> 3) & 1;
+        chip->reg_81_b4 = (chip->reg_addr >> 4) & 1;
+        chip->reg_81_b5 = (chip->reg_addr >> 5) & 1;
+        chip->reg_81_b6 = (chip->reg_addr >> 6) & 1;
+    }
+    else if (chip->reset1)
+    {
+        chip->reg_81_b0 = 0;
+        chip->reg_81_b1 = 0;
+        chip->reg_81_b2 = 0;
+        chip->reg_81_b3 = 0;
+        chip->reg_81_b4 = 0;
+        chip->reg_81_b5 = 0;
+        chip->reg_81_b6 = 0;
+    }
+
+    if (chip->reg_sel[2])
+    {
+        chip->reg_nt = (chip->reg_addr >> 0) & 15;
+    }
+
+    if (chip->tm_w1)
+    {
+        chip->vram_address &= ~0x3c00;
+        chip->vram_address |= chip->reg_nt << 10;
+    }
+
+    if (chip->reg_sel[3])
+    {
+        chip->reg_ct = (chip->reg_addr >> 0) & 255;
+    }
+
+    if (chip->tm_w1)
+    {
+        chip->vram_address &= ~0x3fc0;
+        chip->vram_address |= chip->reg_ct << 6;
+    }
+
+    if (chip->reg_sel[4])
+    {
+        chip->reg_bg = (chip->reg_addr >> 0) & 7;
+    }
+
+    if (chip->tm_w1)
+    {
+        chip->vram_address &= ~0x3800;
+        chip->vram_address |= chip->reg_bg << 11;
+    }
+
+    if (chip->reg_sel[5])
+    {
+        chip->reg_sat = (chip->reg_addr >> 0) & 127;
+    }
+
+    if (chip->tm_w1)
+    {
+        chip->vram_address &= ~0x3f80;
+        chip->vram_address |= chip->reg_sat << 7;
+    }
+
+    if (chip->reg_sel[6])
+    {
+        chip->reg_spr = (chip->reg_addr >> 0) & 7;
+    }
+
+    if (chip->tm_w1)
+    {
+        chip->vram_address &= ~0x3800;
+        chip->vram_address |= chip->reg_spr << 11;
+    }
 }

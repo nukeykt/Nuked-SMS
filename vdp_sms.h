@@ -292,6 +292,17 @@ typedef struct {
     int w268;
     int w269;
     int w270;
+    int w271;
+    int w272;
+    int w273;
+    int w274;
+    int w275;
+    int w276;
+    int w277;
+    int w278;
+    int w279;
+    int w280;
+    int w281;
 
     int cpu_pal;
     int cpu_rd;

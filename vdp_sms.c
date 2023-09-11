@@ -1129,4 +1129,40 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     if (!chip->w269)
         chip->io_data = chip->w270;
 
+    chip->w271 = !(chip->tm_w1 || chip->tm_w2);
+
+    if (chip->hclk1)
+        chip->w272 = chip->tm_w1;
+
+    chip->w273 = chip->w272 ? chip->hclk1 : 0;
+
+    chip->w274 = !(chip->w273 || chip->w271);
+
+    if (chip->w273)
+        chip->w275 = chip->tm_w1;
+    else if (chip->w271)
+        chip->w275 = chip->tm_w2;
+    else if (chip->w274)
+        chip->w275 = chip->w275;
+
+    if (!chip->w254)
+    {
+        chip->io_data &= ~31;
+        chip->io_data |= chip->w275 & 31;
+    }
+
+    chip->w276 = !chip->tm_w1;
+
+    if (chip->hclk1)
+        chip->w277 = (chip->w276 && chip->tm_w1 && chip->tm_w2) || (chip->w276 && !chip->tm_w1 && chip->tm_w3);
+
+    chip->w278 = chip->w277 ? chip->hclk2 : 0;
+
+    if (chip->w278)
+        chip->w279 = chip->vram_data;
+    else if (chip->hclk1)
+        chip->w279 = chip->w279;
+
+    chip->w280 = (chip->w279 & 15) == 0;
+    chip->w281 = (chip->w279 & 240) == 0;
 }

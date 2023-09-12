@@ -1283,4 +1283,111 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     {
         chip->w303[1] = chip->w303[0];
     }
+
+    if (chip->hclk1)
+        chip->w304 = !chip->w317;
+    if (chip->hclk2)
+        chip->w305 = chip->w304;
+
+    if (chip->hclk2)
+        chip->w306[0] = chip->w304 ? 0 : ((chip->w306[1] + 1) & 7);
+    chip->w307 = chip->w306[0] | (chip->w305 ? (chip->w315[1] * 2) : 0);
+    if (chip->hclk1)
+        chip->w306[1] = chip->w307;
+
+    if (chip->hclk1)
+        chip->w308 = !chip->w320;
+    if (chip->hclk2)
+        chip->w309 = chip->w308;
+
+    if (chip->hclk2)
+        chip->w310[0] = chip->w308 ? 0 : ((chip->w310[1] + !chip->w312) & 63);
+    chip->w311 = chip->w310[0] | (chip->w309 ? (chip->w314[1] + chip->w315[1] * (2 + 8 + 16) + 32) : 0);
+    if (chip->hclk1)
+        chip->w310[1] = chip->w311;
+
+    if (chip->hclk1)
+        chip->w312 = chip->w318;
+
+    chip->w313 = ((chip->w311 & 63) << 3) | (chip->w307 & 7);
+
+    if (chip->hclk1)
+        chip->w314[0] = chip->tm_w1;
+    if (chip->hclk2)
+        chip->w314[1] = chip->w314[0];
+
+    if (chip->hclk1)
+        chip->w315[0] = chip->w333;
+    if (chip->hclk2)
+        chip->w315[1] = chip->w315[0];
+
+    chip->w316 = chip->w315[0];
+
+    chip->w317 = !(chip->w319 || chip->tm_w2 || chip->w333);
+
+    chip->w318 = !((chip->w337 && chip->w336) || chip->w319);
+
+    chip->w319 = chip->w335[1] && chip->w321;
+
+    chip->w320 = !(chip->w333 || chip->tm_w2);
+
+    chip->w321 = !(chip->tm_w1 || chip->w338[1]);
+
+    if (chip->hclk1)
+        chip->w322[0] = !chip->w321;
+    if (chip->hclk2)
+        chip->w322[1] = chip->w322[0];
+
+    if (chip->hclk1)
+        chip->w323 = chip->w322[1] || chip->w338[1];
+
+    if (chip->hclk1)
+        chip->w324[0] = !chip->w328[1];
+    if (chip->hclk2)
+        chip->w324[1] = chip->w324[0];
+
+    chip->w325 = !(chip->w328[1] || chip->w324[1] || chip->w326);
+
+    chip->w326 = !chip->reg_80_b0;
+    chip->w327 = !(chip->reg_80_b0 || chip->tm_w1);
+
+    if (chip->hclk1)
+        chip->w328[0] = chip->w327;
+    if (chip->hclk2)
+        chip->w328[1] = chip->w328[0];
+
+    chip->w329 = !(chip->w326 || chip->tm_w2 || chip->w328[1]);
+
+    if (chip->hclk1)
+        chip->w330[0] = chip->tm_w1;
+    if (chip->hclk2)
+        chip->w330[1] = chip->w330[0];
+
+    chip->w331 = chip->w330[1] || chip->w329;
+
+    chip->w332 = chip->w330[1] || chip->w325;
+
+    chip->w333 = chip->w332 || (chip->tm_w1 && chip->w327);
+
+    chip->w334 = !chip->w339;
+
+    if (chip->hclk1)
+        chip->w335[0] = chip->w334;
+    if (chip->hclk2)
+        chip->w335[1] = chip->w335[0];
+
+    chip->w336 = !(chip->w335[1] || chip->w333 || chip->w338[1]);
+
+    if (chip->hclk2)
+        chip->w337 = !chip->w323;
+
+    if (chip->hclk1)
+        chip->w338[0] = chip->w333;
+    if (chip->hclk2)
+        chip->w338[1] = chip->w338[0];
+
+    if (chip->tm_w1 || chip->w338[1])
+        chip->w339 = 1;
+    else if (chip->tm_w3 && chip->tm_w4)
+        chip->w339 = 0;
 }

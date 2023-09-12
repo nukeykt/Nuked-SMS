@@ -1165,4 +1165,122 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     chip->w280 = (chip->w279 & 15) == 0;
     chip->w281 = (chip->w279 & 240) == 0;
+
+    if (chip->w285)
+        chip->w282 = chip->w280;
+    else if (chip->hclk1)
+        chip->w282 = chip->w282;
+
+    if (chip->w285)
+        chip->w283 = chip->w281;
+    else if (chip->hclk1)
+        chip->w283 = chip->w283;
+
+    if (chip->hclk1)
+        chip->w284 = chip->w289;
+    chip->w285 = chip->w284 ? chip->hclk2 : 0;
+
+    if (chip->w291)
+        chip->w286 = chip->w279;
+    else if (chip->hclk2)
+        chip->w286 = chip->w286;
+
+    if (chip->hclk1)
+        chip->w287 = chip->w287;
+
+    if (chip->hclk1)
+        chip->w288 = chip->tm_w1;
+
+    if (chip->hclk2)
+        chip->w289 = chip->w288 && chip->w287;
+
+    if (chip->hclk1)
+        chip->w290[0] = chip->w289;
+    if (chip->hclk2)
+        chip->w290[1] = chip->w290[0];
+    if (chip->hclk1)
+        chip->w290[2] = chip->w290[1];
+    if (chip->hclk2)
+        chip->w290[3] = chip->w290[2];
+
+    chip->w291 = chip->w290[3] ? chip->hclk1 : 0;
+
+    if (chip->hclk1)
+        chip->w292 = chip->tm_w1;
+    chip->w293 = chip->w292 ? chip->hclk2 : 0;
+
+    if (chip->hclk1)
+        chip->w294 = chip->tm_w1;
+    chip->w295 = chip->w294 ? chip->hclk2 : 0;
+
+    if (chip->w293)
+        chip->color_index = (chip->w286 >> 4) & 15;
+
+    if (chip->w295)
+        chip->color_index = (chip->w286 >> 0) & 15;
+
+    if (chip->hclk1)
+        chip->color_index = 15;
+
+    if (chip->hclk1)
+        chip->w296 = chip->tm_w1;
+
+    if (chip->hclk2)
+        chip->w297 = chip->w296 && !chip->tm_w1;
+
+    if (chip->hclk2)
+        chip->w298 = 1;
+    if (chip->hclk1)
+    {
+        if (chip->tm_w1)
+            chip->w298 = 0;
+        else if ((chip->tm_w2 & 254) == 254)
+            chip->w298 = 0;
+        else if ((chip->tm_w2 & 253) == 253)
+            chip->w298 = 0;
+        else if ((chip->tm_w2 & 251) == 251)
+            chip->w298 = 0;
+        else if ((chip->tm_w2 & 247) == 247)
+            chip->w298 = 0;
+        else if ((chip->tm_w2 & 239) == 239)
+            chip->w298 = 0;
+        else if ((chip->tm_w2 & 223) == 223)
+            chip->w298 = 0;
+        else if ((chip->tm_w2 & 191) == 191)
+            chip->w298 = 0;
+        else if ((chip->tm_w2 & 127) == 127)
+            chip->w298 = 0;
+    }
+
+    if (chip->hclk1)
+        chip->w299 = chip->w298;
+    if (chip->hclk2)
+        chip->w300 = chip->w299;
+
+    chip->w301[0] = !(chip->tm_w1 || chip->tm_w2 || chip->tm_w3 || (chip->tm_w4 & 1) != 0 || (chip->tm_w5 & 1) != 0);
+    chip->w301[1] = !(chip->tm_w1 || chip->tm_w2 || chip->tm_w3 || (chip->tm_w4 & 3) != 0 || (chip->tm_w5 & 2) != 0);
+    chip->w301[2] = !(chip->tm_w1 || chip->tm_w2 || chip->tm_w3 || (chip->tm_w4 & 7) != 0 || (chip->tm_w5 & 4) != 0);
+    chip->w301[3] = !(chip->tm_w1 || chip->tm_w2 || chip->tm_w3 || (chip->tm_w4 & 15) != 0 || (chip->tm_w5 & 8) != 0);
+    chip->w301[4] = !(chip->tm_w1 || chip->tm_w2 || chip->tm_w3 || (chip->tm_w4 & 31) != 0);
+    chip->w301[5] = !(chip->tm_w1 || chip->tm_w2 || chip->tm_w3 || (chip->tm_w4 & 63) != 0);
+    chip->w301[6] = !(chip->tm_w1 || chip->tm_w2 || chip->tm_w3 || (chip->tm_w4 & 127) != 0);
+    chip->w301[7] = !(chip->tm_w1 || chip->tm_w2 || chip->tm_w3 || (chip->tm_w4 & 255) != 0);
+    chip->w301[8] = !((chip->tm_w4 & 255) != 0);
+
+    chip->w302 = !chip->w301[8];
+
+    if (chip->hclk1)
+    {
+        int i;
+        chip->w303[0] = 0;
+        for (i = 0; i < 8; i++)
+        {
+            if (chip->w301[i])
+                chip->w303[0] |= 1 << i;
+        }
+    }
+    if (chip->hclk2)
+    {
+        chip->w303[1] = chip->w303[0];
+    }
 }

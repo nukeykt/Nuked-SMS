@@ -1390,4 +1390,67 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
         chip->w339 = 1;
     else if (chip->tm_w3 && chip->tm_w4)
         chip->w339 = 0;
+
+    chip->hpla[0] = (chip->w313 & 0b111111101) == 0b111101000 && !chip->tm_w1;
+    chip->hpla[1] = (chip->w313 & 0b100010111) == 0b000010010 && !chip->tm_w1;
+    chip->hpla[2] = (chip->w313 & 0b100011111) == 0b000001010 && !chip->tm_w1;
+    chip->hpla[3] = (chip->w313 & 0b000000001) == 0b000000001 && !chip->tm_w1;
+    chip->hpla[4] = (chip->w313 & 0b111110001) == 0b111110000 && !chip->tm_w1;
+    chip->hpla[5] = (chip->w313 & 0b111111101) == 0b100000100 && !chip->tm_w1 && !chip->tm_w2;
+    chip->hpla[6] = (chip->w313 & 0b111111101) == 0b100001000 && !chip->tm_w1;
+    chip->hpla[7] = (chip->w313 & 0b111111001) == 0b100010000 && !chip->tm_w1;
+    chip->hpla[8] = (chip->w313 & 0b111111101) == 0b100011100 && !chip->tm_w1;
+    chip->hpla[9] = (chip->w313 & 0b111111101) == 0b111010100 && !chip->tm_w1;
+    chip->hpla[10] = (chip->w313 & 0b111111101) == 0b111011100 && !chip->tm_w1;
+    chip->hpla[11] = (chip->w313 & 0b111111101) == 0b111100000 && !chip->tm_w1;
+
+    chip->hpla[12] = (chip->w313 & 0b100000011) == 0b000000000 && !chip->tm_w1;
+    chip->hpla[13] = (chip->w313 & 0b000000111) == 0b000000000 && !chip->tm_w1;
+    chip->hpla[14] = (chip->w313 & 0b111111101) == 0b100001100 && !chip->tm_w1;
+    chip->hpla[15] = (chip->w313 & 0b100000111) == 0b000000000 && !chip->tm_w1;
+    chip->hpla[16] = (chip->w313 & 0b111111101) == 0b100011000 && !chip->tm_w1;
+    chip->hpla[17] = (chip->w313 & 0b100000111) == 0b000000100 && !chip->tm_w1;
+    chip->hpla[18] = (chip->w313 & 0b100000111) == 0b000000110 && !chip->tm_w1;
+    chip->hpla[19] = (chip->w313 & 0b000000111) == 0b000000100 && !chip->tm_w1;
+    chip->hpla[20] = (chip->w313 & 0b111111101) == 0b111011000 && !chip->tm_w1;
+    chip->hpla[21] = (chip->w313 & 0b111111101) == 0b111100100 && !chip->tm_w1;
+
+    chip->hpla[22] = (chip->w313 & 0b111111111) == 0b111100111 && !chip->tm_w1;
+    chip->hpla[23] = (chip->w313 & 0b111111111) == 0b111100101;
+    chip->hpla[24] = (chip->w313 & 0b111111111) == 0b111100001 && !chip->tm_w1;
+    chip->hpla[25] = (chip->w313 & 0b111111111) == 0b111011011 && !chip->tm_w1;
+    chip->hpla[26] = (chip->w313 & 0b111111111) == 0b111011001;
+    chip->hpla[27] = (chip->w313 & 0b111111111) == 0b100100001 && !chip->tm_w1;
+    chip->hpla[28] = (chip->w313 & 0b111111111) == 0b100011011 && !chip->tm_w1;
+    chip->hpla[29] = (chip->w313 & 0b111111111) == 0b100011001;
+    chip->hpla[30] = (chip->w313 & 0b111111111) == 0b100010101 && !chip->tm_w1;
+    chip->hpla[31] = (chip->w313 & 0b111111111) == 0b100001111 && !chip->tm_w1;
+
+    chip->hpla[32] = (chip->w313 & 0b111111111) == 0b100001101;
+    chip->hpla[33] = (chip->w313 & 0b111111111) == 0b100001001 && !chip->tm_w1;
+    chip->hpla[34] = (chip->w313 & 0b111111111) == 0b000001001;
+    chip->hpla[35] = (chip->w313 & 0b111111111) == 0b111101001;
+    chip->hpla[36] = (chip->w313 & 0b000000111) == 0b000000111;
+    chip->hpla[37] = (chip->w313 & 0b000000111) == 0b000000001;
+    chip->hpla[38] = (chip->w313 & 0b111111111) == 0b111010111;
+    chip->hpla[39] = (chip->w313 & 0b111111111) == 0b100010111;
+    chip->hpla[40] = (chip->w313 & 0b000000111) == 0b000000011;
+    chip->hpla[41] = (chip->w313 & 0b100010000) == 0b100010000 && !chip->tm_w1;
+
+    chip->hpla[42] = (chip->w313 & 0b111111111) == 0b111111000;
+    chip->hpla[43] = (chip->w313 & 0b111111111) == 0b111101010;
+    chip->hpla[44] = (chip->w313 & 0b111111111) == 0b111101000;
+    chip->hpla[45] = (chip->w313 & 0b111111111) == 0b100100100;
+    chip->hpla[46] = (chip->w313 & 0b111111111) == 0b000000000;
+    chip->hpla[47] = (chip->w313 & 0b111111111) == 0b100011100;
+    chip->hpla[48] = (chip->w313 & 0b111111111) == 0b100001010;
+
+    chip->hpla[49] = (chip->w313 & 0b111111111) == 0b101011000;
+    chip->hpla[50] = (chip->w313 & 0b111111111) == 0b000010010;
+    chip->hpla[51] = (chip->w313 & 0b111111111) == 0b000001010;
+    chip->hpla[52] = (chip->w313 & 0b111111111) == 0b101000100;
+    chip->hpla[53] = (chip->w313 & 0b111111111) == 0b000000110;
+    chip->hpla[54] = (chip->w313 & 0b000000111) == 0b000000100;
+    chip->hpla[55] = (chip->w313 & 0b111111111) == 0b101011110;
+    chip->hpla[56] = (chip->w313 & 0b111111111) == 0b100100110;
 }

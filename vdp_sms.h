@@ -362,6 +362,8 @@ typedef struct {
     int w338[2];
     int w339;
 
+    int hpla[57];
+
     int cpu_pal;
     int cpu_rd;
     int cpu_wr;

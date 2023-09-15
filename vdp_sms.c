@@ -1712,4 +1712,73 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     chip->w410 = (chip->w402 & 256) == 0 && (chip->w402 & 224) != 224;
 
     chip->w411 = ((chip->w402 >> 5) + !chip->w410) & 7;
+
+    if (chip->hclk1)
+        chip->w412 = chip->tm_w1;
+    chip->w413 = chip->w412 ? chip->hclk2 : 0;
+
+    if (chip->hclk1)
+        chip->w414 = chip->tm_w1;
+    chip->w415 = chip->w414 ? chip->hclk2 : 0;
+
+    chip->w416 = chip->tm_w1;
+
+    if (chip->hclk2)
+        chip->w417 = !chip->w392;
+
+    if (chip->hclk1)
+    {
+        chip->w418[0] = chip->w417;
+        chip->w418[2] = chip->w418[1];
+    }
+    if (chip->hclk2)
+    {
+        chip->w418[1] = chip->w418[0];
+        chip->w418[3] = chip->w418[2];
+    }
+
+    if (chip->w416)
+    {
+        chip->w419 = (chip->vram_data & 255) | ((chip->w2_h & 255) << 8);
+    }
+    else
+    {
+        int i, bit, bit2;
+        chip->w419 = 0;
+        for (i = 0; i < 8; i++)
+        {
+            bit = 1 << i;
+            bit2 = 128 >> i;
+            if (chip->vram_data & bit)
+                chip->w419 |= bit2;
+            if (chip->w2_h & bit)
+                chip->w419 |= bit2 << 8;
+        }
+    }
+
+    if (chip->w413)
+        chip->w420 = chip->w419;
+
+    if (chip->w415)
+        chip->w421 = chip->w419;
+
+    if (chip->hclk2)
+        chip->w422 = (chip->w424 << 1) & 0xfefe;
+
+    if (chip->hclk2)
+        chip->w423 = (chip->w425 << 1) & 0xfefe;
+
+    if (chip->hclk1)
+        chip->w424 = chip->w417 ? chip->w420 : chip->w422;
+
+    if (chip->hclk1)
+        chip->w425 = chip->w418[3] ? chip->w421 : chip->w423;
+
+    if (chip->w415)
+        chip->w426 = chip->tm_w1 | (chip->tm2 << 1);
+
+    if (chip->hclk1)
+        chip->w427[0] = chip->w418[3] ? chip->w426 : chip->w427[1];
+    if (chip->hclk2)
+        chip->w427[1] = chip->w418[0];
 }

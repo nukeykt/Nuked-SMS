@@ -436,6 +436,21 @@ typedef struct {
     int w409;
     int w410;
     int w411;
+    int w412;
+    int w413;
+    int w414;
+    int w415;
+    int w416;
+    int w417;
+    int w418[4];
+    int w419;
+    int w420;
+    int w421;
+    int w422;
+    int w423;
+    int w424;
+    int w425;
+    int w426;
 
     int cpu_pal;
     int cpu_rd;

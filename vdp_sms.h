@@ -451,6 +451,26 @@ typedef struct {
     int w424;
     int w425;
     int w426;
+    int w427[2];
+    int w428;
+    int w429;
+    int w430;
+    int w431;
+    int w432;
+    int w433;
+    int w434;
+    int w435[2];
+    int w436;
+    int w437;
+    int w438[4];
+    int w439;
+    int w440;
+    int w441;
+    int w442[4];
+    int w443;
+    int w444;
+    int w445;
+    int w446;
 
     int cpu_pal;
     int cpu_rd;
@@ -466,11 +486,13 @@ typedef struct {
     int reg_code;
 
     int vram_data;
+    int vram_data2;
     int vram_address;
 
     int cpu_data;
 
     int color_index;
+    int color_palette;
 
     int clk1;
     int clk2;

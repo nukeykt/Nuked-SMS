@@ -105,7 +105,7 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     chip->w25 = chip->w27[1] ? chip->hclk2 : 0;
 
     if (chip->hclk2)
-        chip->w26[0] = chip->tm_w1;
+        chip->w26[0] = chip->w544;
     if (chip->hclk1)
         chip->w26[1] = chip->w26[0];
     if (chip->hclk2)
@@ -509,7 +509,7 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     }
 
     if (chip->hclk2)
-        chip->w136 = chip->tm_w1;
+        chip->w136 = chip->w544;
     chip->w137 = chip->w136 ? chip->hclk1 : 0;
 
     if (chip->hclk1)
@@ -964,7 +964,7 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     if (chip->hclk1)
         chip->w220 = chip->tm_w1;
     if (chip->hclk2)
-        chip->w221 = (chip->w220 && chip->tm_w1) || (chip->tm_w2 && chip->tm_w3);
+        chip->w221 = (chip->w220 && chip->tm_w1) || (chip->w542 && chip->tm_w3);
     chip->w222 = chip->w221 ? chip->hclk1 : 0;
 
     if (chip->hclk1)
@@ -1658,10 +1658,10 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     if (chip->w394)
     {
-        chip->vram_address &= ~0x7fe;
-        chip->vram_address |= (chip->w396 & 31) << 1;
-        chip->vram_address |= ((chip->w402 >> 3) & 3) << 6;
-        chip->vram_address |= (chip->w411 & 7) << 8;
+        chip->vram_address &= ~0xffc;
+        chip->vram_address |= (chip->w396 & 31) << 2;
+        chip->vram_address |= ((chip->w402 >> 3) & 3) << 7;
+        chip->vram_address |= (chip->w411 & 7) << 9;
     }
 
     if (chip->reg_sel[9])
@@ -1696,8 +1696,8 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     if (chip->w409)
     {
-        chip->vram_address &= ~0x1e;
-        chip->vram_address |= ((chip->w406 << 2) | chip->w405[1]) << 1;
+        chip->vram_address &= ~0x3c;
+        chip->vram_address |= ((chip->w406 << 2) | chip->w405[1]) << 2;
     }
 
     chip->w407 = !(chip->reg_80_b2 && (chip->w343[6] || chip->w343[7]));
@@ -1817,8 +1817,8 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     if (chip->w434)
     {
-        chip->vram_address &= ~0x1ff0;
-        chip->vram_address |= chip->w430 << 4;
+        chip->vram_address &= ~0x3fe0;
+        chip->vram_address |= chip->w430 << 5;
     }
 
     if (chip->hclk1)
@@ -2104,7 +2104,7 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     chip->w516 = !(chip->w513 || chip->w514);
 
-    chip->w517 = !(chip->tm_w1 || (chip->w94 && !chip->reg_80_b2));
+    chip->w517 = !(chip->w546[1] || (chip->w94 && !chip->reg_80_b2));
 
     chip->w518 = chip->w517;
 
@@ -2181,4 +2181,139 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
 
     if (chip->hclk1)
         chip->w535 = chip->w534;
+
+    chip->w536 = !(chip->reg_80_b2 && (chip->w343[3] || chip->w343[8]));
+
+    if (chip->hclk1)
+        chip->w537[0] = chip->w548 ? 0 : ((chip->w537[1] + !chip->w536) & 3);
+    if (chip->hclk2)
+        chip->w537[1] = chip->w537[0];
+
+    if (chip->hclk1)
+        chip->w538 = chip->w545[1] || chip->w545[2];
+    if (chip->hclk2)
+        chip->w539 = chip->w538;
+
+    chip->w540 = chip->w539 ? chip->hclk1 : 0;
+
+    if (chip->w540)
+    {
+        chip->vram_address &= ~2;
+        if ((chip->w537[1] & 2) == 0)
+            chip->vram_address |= 2;
+    }
+
+    chip->w541 = !(chip->w545[3] || (chip->w343[4] && !chip->w343[3]));
+
+    if (chip->hclk1)
+        chip->w542 = !chip->w541;
+
+    chip->w543 = !chip->w545[3];
+
+    if (chip->hclk1)
+        chip->w544 = !chip->w543;
+
+    chip->w545[0] = !chip->w536 && (chip->w537[1] & 2) != 0;
+    chip->w545[1] = !chip->w536 && (chip->w537[1] & 2) != 0;
+    chip->w545[2] = !chip->w536 && (chip->w537[1] & 1) != 0;
+    chip->w545[3] = !chip->w536 && (chip->w537[1] & 3) == 0;
+    chip->w545[4] = !chip->w536 && !chip->w120;
+
+    if (chip->hclk1)
+        chip->w546[0] = chip->w545[0];
+    if (chip->hclk2)
+        chip->w546[1] = chip->w546[0];
+
+    if (chip->hclk1)
+    {
+        chip->w547[0] = chip->w370[1];
+        chip->w547[2] = chip->w547[1];
+    }
+    if (chip->hclk2)
+    {
+        chip->w547[1] = chip->w547[0];
+        chip->w547[3] = chip->w547[2];
+    }
+
+    chip->w548 = !(!chip->w547[3] && !chip->w545[0]);
+
+    if (chip->hclk1)
+        chip->w549[0] = chip->w547[1] ? 0 : ((chip->w549[1] + chip->w545[0]) & 7);
+    if (chip->hclk2)
+        chip->w549[1] = chip->w549[0];
+
+    chip->w550[0] = chip->w549[1] == 0 && chip->w545[4];
+    chip->w550[1] = chip->w549[1] == 1 && chip->w545[4];
+    chip->w550[2] = chip->w549[1] == 2 && chip->w545[4];
+    chip->w550[3] = chip->w549[1] == 3 && chip->w545[4];
+    chip->w550[4] = chip->w549[1] == 4 && chip->w545[4];
+    chip->w550[5] = chip->w549[1] == 5 && chip->w545[4];
+    chip->w550[6] = chip->w549[1] == 6 && chip->w545[4];
+    chip->w550[7] = chip->w549[1] == 7 && chip->w545[4];
+
+    if (chip->hclk1)
+    {
+        int i;
+        for (i = 0; i < 8; i++)
+            chip->w551[i][0] = chip->w550[i];
+        for (i = 0; i < 8; i++)
+        {
+            chip->w553[i][0] = chip->w551[i][1];
+            chip->w553[i][2] = chip->w553[i][1];
+        }
+    }
+    if (chip->hclk2)
+    {
+        int i;
+        for (i = 0; i < 8; i++)
+            chip->w551[i][1] = chip->w551[i][0];
+        for (i = 0; i < 8; i++)
+        {
+            chip->w553[i][1] = chip->w553[i][0];
+            chip->w553[i][3] = chip->w553[i][2];
+        }
+    }
+
+    chip->w552[0] = chip->w551[0][1] || chip->w355[1];
+    chip->w552[1] = chip->w551[1][1] || chip->w352[1];
+    chip->w552[2] = chip->w551[2][1] || chip->w349[1];
+    chip->w552[3] = chip->w551[3][1] || chip->w346[1];
+
+    chip->w554[0] = chip->w553[0][3] || chip->w353[1];
+    chip->w554[1] = chip->w553[1][3] || chip->w350[1];
+    chip->w554[2] = chip->w553[2][3] || chip->w347[1];
+    chip->w554[3] = chip->w553[3][3] || chip->w344[1];
+
+    chip->w555[0] = !chip->w302 && !chip->w283 && !chip->w480 && !chip->w469 && !chip->w557[1] && !chip->reg_80_b2;
+    chip->w555[1] = !chip->w302 && !chip->w282 && chip->w480 && !chip->w469 && !chip->w557[1] && !chip->reg_80_b2;
+    chip->w555[2] = !chip->w302 && chip->w459 && !chip->w480 && chip->w469 && !chip->w557[1] && !chip->reg_80_b2;
+    chip->w555[3] = !chip->w302 && !chip->w557[1] && chip->reg_80_b2;
+
+    chip->w556 = !chip->w387;
+
+    if (chip->hclk1)
+        chip->w557[0] = chip->w556;
+    if (chip->hclk2)
+        chip->w557[1] = chip->w557[0];
+
+    chip->w558 = !chip->w302 && !chip->w555[0] && !chip->w555[1] && !chip->w555[2] && !chip->w555[3];
+
+    chip->w559 = chip->w557[1];
+
+    if (chip->hclk1)
+    {
+        chip->w560[0][0] = chip->w555[0];
+        chip->w560[1][0] = chip->w555[1];
+        chip->w560[2][0] = chip->w555[2];
+        chip->w560[3][0] = chip->w555[3];
+        chip->w560[4][0] = chip->w558;
+    }
+    if (chip->hclk2)
+    {
+        chip->w560[0][1] = chip->w560[0][0];
+        chip->w560[1][1] = chip->w560[1][0];
+        chip->w560[2][1] = chip->w560[2][0];
+        chip->w560[3][1] = chip->w560[3][0];
+        chip->w560[4][1] = chip->w560[4][0];
+    }
 }

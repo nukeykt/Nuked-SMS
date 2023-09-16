@@ -6,6 +6,42 @@ typedef struct {
 } vdpsms_input_t;
 
 typedef struct {
+
+    int i1;
+    int i2;
+    int i3;
+
+    int w561;
+    int w562;
+    int w563;
+    int w564;
+    int w565;
+    int w566;
+    int w567;
+    int w568;
+    int w569;
+    int w570;
+    int w571;
+    int w572;
+    int w573;
+    int w574;
+    int w575;
+    int w576;
+    int w577;
+    int w578;
+
+    int tm_w1;
+    int tm_w2;
+    int tm_w3;
+    int tm_w4;
+
+} vdpsms_spriteunit1_t; // mode 4 & tms sprite
+
+typedef struct {
+
+} vdpsms_spriteunit2_t; // mode 4 sprite
+
+typedef struct {
     vdpsms_input_t input;
 
     int o_ad;
@@ -639,6 +675,9 @@ typedef struct {
     int reg_bg;
     int reg_sat;
     int reg_spr;
+
+    vdpsms_spriteunit1_t sprite1[4];
+    vdpsms_spriteunit2_t sprite2[4];
 
     int tm_w1;
     int tm_w2;

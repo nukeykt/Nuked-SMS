@@ -10,6 +10,7 @@ typedef struct {
     int i1;
     int i2;
     int i3;
+    int i4;
 
     int w561;
     int w562;
@@ -29,6 +30,33 @@ typedef struct {
     int w576;
     int w577;
     int w578;
+    int w579;
+    int w580[4];
+    int w581;
+    int w582;
+    int w583;
+    int w584;
+    int w585;
+    int w586;
+    int w587;
+    int w589;
+    int w590;
+    int w591[2];
+    int w592;
+    int w593[2];
+    int w594;
+    int w595;
+    int w596;
+    int w597[2];
+    int w598;
+    int w599[2];
+    int w600;
+    int w601;
+    int w602;
+    int w603;
+    int w604;
+    int w605;
+    int w606;
 
     int tm_w1;
     int tm_w2;
@@ -622,6 +650,7 @@ typedef struct {
     int w558;
     int w559;
     int w560[5][2];
+    int w588;
 
     int cpu_pal;
     int cpu_rd;

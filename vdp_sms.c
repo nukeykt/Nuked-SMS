@@ -2331,20 +2331,34 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     chip->sprite1[1].i3 = chip->w552[1];
     chip->sprite1[2].i3 = chip->w552[2];
     chip->sprite1[3].i3 = chip->w552[3];
+    chip->sprite1[0].i4 = chip->w554[0];
+    chip->sprite1[1].i4 = chip->w554[1];
+    chip->sprite1[2].i4 = chip->w554[2];
+    chip->sprite1[3].i4 = chip->w554[3];
+
+    chip->w588 = !(chip->reg_81_b1 && !chip->reg_80_b2);
 
     VDPSMS_ClockSprite1(chip, &chip->sprite1[0]);
     VDPSMS_ClockSprite1(chip, &chip->sprite1[1]);
     VDPSMS_ClockSprite1(chip, &chip->sprite1[2]);
     VDPSMS_ClockSprite1(chip, &chip->sprite1[3]);
 
-    if (chip->sprite1[0].w568)
+    if (chip->sprite1[0].w564)
         chip->color_index = chip->sprite1[0].w568;
-    if (chip->sprite1[1].w568)
+    if (chip->sprite1[0].w606)
+        chip->color_index = chip->sprite1[0].w603;
+    if (chip->sprite1[1].w564)
         chip->color_index = chip->sprite1[1].w568;
-    if (chip->sprite1[2].w568)
+    if (chip->sprite1[1].w606)
+        chip->color_index = chip->sprite1[1].w603;
+    if (chip->sprite1[2].w564)
         chip->color_index = chip->sprite1[2].w568;
-    if (chip->sprite1[3].w568)
+    if (chip->sprite1[2].w606)
+        chip->color_index = chip->sprite1[2].w603;
+    if (chip->sprite1[3].w564)
         chip->color_index = chip->sprite1[3].w568;
+    if (chip->sprite1[3].w606)
+        chip->color_index = chip->sprite1[3].w603;
 }
 
 void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)
@@ -2403,4 +2417,104 @@ void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)
 
     if (chip->hclk1)
         spr->w578 = (spr->w577[0] & 1) == 0;
+
+    spr->w579 = !spr->i4;
+
+    if (chip->hclk1)
+    {
+        spr->w580[0] = spr->w579;
+        spr->w580[2] = spr->w580[1];
+    }
+    if (chip->hclk2)
+    {
+        spr->w580[1] = spr->w580[0];
+        spr->w580[3] = spr->w580[2];
+    }
+
+    if (chip->hclk1)
+        spr->w581 = !spr->w580[3];
+
+    spr->w582 = spr->w574;
+
+    if (chip->hclk1)
+        spr->w583 = !spr->w579;
+
+    spr->w584 = !(spr->w581 || spr->w582);
+    spr->w585 = !(spr->w581 || !spr->w582);
+    spr->w586 = !(spr->w583 || spr->w582);
+    spr->w587 = !(spr->w583 || !spr->w582);
+
+    spr->w589 = !(chip->w588 || spr->w602);
+
+    if (spr->w583)
+        spr->w590 = chip->vram_data & 255;
+    else if (spr->w587)
+        spr->w590 = ((spr->w591[1] << 1) | spr->w589) & 511;
+    else if (spr->w586)
+        spr->w590 = spr->w591[1];
+
+    if (chip->hclk2)
+        spr->w591[0] = spr->w590;
+    if (chip->hclk1)
+        spr->w591[1] = spr->w591[0];
+
+    if (chip->hclk2)
+        spr->w594 = (spr->w590 & 256) == 0;
+
+    if (spr->w581)
+        spr->w592 = chip->vram_data & 255;
+    else if (spr->w585)
+        spr->w592 = (spr->w593[1] << 1) & 511;
+    else if (spr->w584)
+        spr->w592 = spr->w593[1];
+
+    if (chip->hclk2)
+        spr->w593[0] = spr->w592;
+    if (chip->hclk1)
+        spr->w593[1] = spr->w593[0];
+
+    if (chip->hclk2)
+        spr->w595 = (spr->w592 & 256) == 0;
+
+    if (spr->w583)
+        spr->w596 = (chip->vram_data2 >> 8) & 255;
+    else if (spr->w587)
+        spr->w596 = (spr->w597[1] << 1) & 511;
+    else if (spr->w586)
+        spr->w596 = spr->w597[1];
+
+    if (chip->hclk2)
+        spr->w597[0] = spr->w596;
+    if (chip->hclk1)
+        spr->w597[1] = spr->w597[0];
+
+    if (chip->hclk2)
+        spr->w600 = (spr->w596 & 256) == 0;
+
+    if (spr->w581)
+        spr->w598 = (chip->vram_data2 >> 8) & 255;
+    else if (spr->w585)
+        spr->w598 = (spr->w599[1] << 1) & 511;
+    else if (spr->w584)
+        spr->w598 = spr->w599[1];
+
+    if (chip->hclk2)
+        spr->w599[0] = spr->w598;
+    if (chip->hclk1)
+        spr->w599[1] = spr->w599[0];
+
+    if (chip->hclk2)
+        spr->w601 = (spr->w598 & 256) == 0;
+
+    if (chip->hclk1)
+        spr->w602 = (spr->w593[0] & 128) == 0;
+
+    spr->w603 = chip->reg_80_b2 ? ((!spr->w594) + (!spr->w600) * 2 + (!spr->w595) * 4 + (!spr->w601) * 8)
+        : !spr->w594;
+
+    spr->w604 = spr->w603 == 0;
+
+    if (chip->hclk1)
+        spr->w605 = !(!chip->reg_80_b2 || !spr->i2);
+    spr->w606 = spr->w605 ? chip->hclk2 : 0;
 }

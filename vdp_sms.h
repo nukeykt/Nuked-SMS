@@ -57,6 +57,7 @@ typedef struct {
     int w604;
     int w605;
     int w606;
+    int w639[3];
 
     int tm_w1;
     int tm_w2;
@@ -69,6 +70,7 @@ typedef struct {
 
     int i1;
     int i2;
+    int i3;
 
     int w607;
     int w608;
@@ -79,6 +81,30 @@ typedef struct {
     int w613;
     int w614;
     int w615[4];
+    int w616;
+    int w617;
+    int w618;
+    int w619;
+    int w620;
+    int w621;
+    int w622;
+    int w623;
+    int w624[2];
+    int w625;
+    int w626;
+    int w627[2];
+    int w628;
+    int w629;
+    int w630[2];
+    int w631;
+    int w632;
+    int w633[2];
+    int w634;
+    int w635;
+    int w636;
+    int w637[3];
+    int w638;
+    int w640;
 
     int tm_w1;
     int tm_w2;

@@ -67,6 +67,24 @@ typedef struct {
 
 typedef struct {
 
+    int i1;
+    int i2;
+
+    int w607;
+    int w608;
+    int w609;
+    int w610;
+    int w611;
+    int w612[2];
+    int w613;
+    int w614;
+    int w615[4];
+
+    int tm_w1;
+    int tm_w2;
+    int tm_w3;
+    int tm_w4;
+
 } vdpsms_spriteunit2_t; // mode 4 sprite
 
 typedef struct {

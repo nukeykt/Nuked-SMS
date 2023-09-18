@@ -3,6 +3,7 @@
 #include "vdp_sms.h"
 
 void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr);
+void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr);
 
 void VDPSMS_Clock(vdpsms_t *chip, int clk)
 {
@@ -2343,6 +2344,20 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     VDPSMS_ClockSprite1(chip, &chip->sprite1[2]);
     VDPSMS_ClockSprite1(chip, &chip->sprite1[3]);
 
+    chip->sprite2[0].i1 = chip->w551[4][1];
+    chip->sprite2[1].i1 = chip->w551[5][1];
+    chip->sprite2[2].i1 = chip->w551[6][1];
+    chip->sprite2[3].i1 = chip->w551[7][1];
+    chip->sprite2[0].i2 = chip->w553[4][3];
+    chip->sprite2[1].i2 = chip->w553[5][3];
+    chip->sprite2[2].i2 = chip->w553[6][3];
+    chip->sprite2[3].i2 = chip->w553[7][3];
+
+    VDPSMS_ClockSprite2(chip, &chip->sprite2[0]);
+    VDPSMS_ClockSprite2(chip, &chip->sprite2[1]);
+    VDPSMS_ClockSprite2(chip, &chip->sprite2[2]);
+    VDPSMS_ClockSprite2(chip, &chip->sprite2[3]);
+
     if (chip->sprite1[0].w564)
         chip->color_index = chip->sprite1[0].w568;
     if (chip->sprite1[0].w606)
@@ -2403,7 +2418,7 @@ void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)
     if (chip->hclk1)
         spr->w573 = spr->i3;
 
-    spr->w574 = !((spr->w564 && spr->w578) || spr->w572);
+    spr->w574 = !((chip->reg_81_b0 && spr->w578) || spr->w572);
 
     if (chip->hclk1)
         spr->w575 = spr->w570;
@@ -2517,4 +2532,46 @@ void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)
     if (chip->hclk1)
         spr->w605 = !(!chip->reg_80_b2 || !spr->i2);
     spr->w606 = spr->w605 ? chip->hclk2 : 0;
+}
+
+void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr)
+{
+    if (spr->i1)
+        spr->w607 = 0;
+    else if (chip->w366[1])
+        spr->w607 = 1;
+
+    if (chip->hclk1)
+        spr->w608 = !spr->w607;
+
+    if (chip->hclk1)
+        spr->w609 = spr->w607 && spr->w612[0] == 255;
+
+    if (spr->w609)
+        spr->w610 = 0;
+    else if (spr->w611)
+        spr->w610 = 1;
+
+    if (chip->hclk1)
+        spr->w611 = spr->i1;
+
+    spr->w613 = (spr->w612[1] + !spr->w608) & 255;
+
+    if (chip->hclk2)
+        spr->w612[0] = spr->w611 ? (chip->vram_data ^ 255) : spr->w613;
+    if (chip->hclk1)
+        spr->w612[1] = spr->w612[0];
+
+    spr->w614 = !spr->i2;
+
+    if (chip->hclk1)
+    {
+        spr->w615[0] = spr->w614;
+        spr->w615[2] = spr->w615[1];
+    }
+    if (chip->hclk2)
+    {
+        spr->w615[1] = spr->w615[0];
+        spr->w615[3] = spr->w615[2];
+    }
 }

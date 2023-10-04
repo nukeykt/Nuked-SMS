@@ -2386,6 +2386,45 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
         chip->color_index = chip->sprite2[2].w637[2];
     if (chip->sprite2[3].w640)
         chip->color_index = chip->sprite2[3].w637[2];
+
+    if (chip->hclk2)
+        chip->w641 = (chip->color_palette << 4) | chip->color_index;
+
+    chip->w642 = chip->w209;
+    chip->w643 = !chip->w642 && !chip->w385 && !chip->w156;
+    chip->w644 = !chip->w642 && !chip->w643;
+
+    if (chip->w642)
+        chip->w645 = chip->reg_addr & 31;
+    else if (chip->w643)
+        chip->w645 = chip->w641;
+    else if (chip->w644)
+        chip->w645 = (chip->w313 >> 1) & 15;
+
+    if (chip->hclk1)
+        chip->color_ram_index = chip->w645;
+
+    if (chip->hclk2)
+        chip->w646[0] = chip->vram_data & 63;
+    if (chip->hclk1)
+        chip->w646[1] = chip->w646[0];
+
+    if (chip->hclk1)
+        chip->w649 = !chip->w209;
+
+    //chip->w647 = !chip->hclk1 && (chip->color_ram_index & 16) == 0 && !chip->w649;
+    //chip->w648 = !chip->hclk1 && (chip->color_ram_index & 16) != 0 && !chip->w649;
+    chip->color_ram_write = !chip->w649;
+
+    if (chip->hclk2)
+    {
+        if (chip->color_ram_write)
+            chip->color_ram[chip->color_ram_index] = chip->w646[1];
+
+        chip->w650 = chip->color_ram[chip->color_ram_index] & 63;
+    }
+
+    chip->w651 = chip->reg_80_b2 ? chip->w650 : 0;
 }
 
 void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)

@@ -695,6 +695,22 @@ typedef struct {
     int w559;
     int w560[5][2];
     int w588;
+    int w641;
+    int w642;
+    int w643;
+    int w644;
+    int w645;
+    int color_ram_index;
+    int w646[2];
+    //int w647;
+    //int w648;
+    int color_ram_write;
+    int w649;
+    int color_ram[32];
+    int color_ram_bus;
+    int w650;
+    int w651;
+
 
     int cpu_pal;
     int cpu_rd;

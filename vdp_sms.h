@@ -710,6 +710,18 @@ typedef struct {
     int color_ram_bus;
     int w650;
     int w651;
+    int w652[2];
+    int w653;
+    int w654;
+    int w655;
+    int w656;
+    int w657[2];
+    int w658;
+    int w659;
+    int w660;
+    int w661;
+    int w662;
+    int dac_sel;
 
 
     int cpu_pal;
@@ -767,6 +779,10 @@ typedef struct {
 
     vdpsms_spriteunit1_t sprite1[4];
     vdpsms_spriteunit2_t sprite2[4];
+
+    int o_dac_r;
+    int o_dac_g;
+    int o_dac_b;
 
     int tm_w1;
     int tm_w2;

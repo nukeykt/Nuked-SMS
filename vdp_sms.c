@@ -2,8 +2,35 @@
 
 #include "vdp_sms.h"
 
-void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr);
-void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr);
+static void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr);
+static void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr);
+
+static int tms_color[16] = {
+    0b000000,
+    0b000000,
+    0b001000,
+    0b001100,
+    0b010000,
+    0b110000,
+    0b000001,
+    0b111100,
+    0b000010,
+    0b000011,
+    0b000101,
+    0b001111,
+    0b000100,
+    0b110011,
+    0b010101,
+    0b111111
+};
+
+static int dac_lut_rg[4] = {
+    0, 85, 170, 255
+};
+
+static int dac_lut_b[4] = {
+    0, 103, 170, 255
+};
 
 void VDPSMS_Clock(vdpsms_t *chip, int clk)
 {
@@ -2425,9 +2452,50 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     }
 
     chip->w651 = chip->reg_80_b2 ? chip->w650 : 0;
+
+    if (chip->hclk2)
+        chip->w652[0] = chip->color_index;
+    if (chip->hclk1)
+        chip->w652[1] = chip->w652[0];
+
+    chip->w653 = chip->reg_80_b2 ? 0 : chip->w652[1];
+
+    chip->w654 = chip->w652[1] != 0;
+
+    if (chip->hclk1)
+        chip->w655 = chip->w385 || chip->w156;
+
+    if (chip->hclk2)
+        chip->w656 = chip->w654 || chip->w655;
+
+    if (chip->hclk2)
+        chip->w657[0] = chip->w655;
+    if (chip->hclk1)
+        chip->w657[1] = chip->w657[0];
+
+    if (chip->hclk1)
+        chip->w658 = !(chip->w384 || chip->w151);
+
+    if (chip->hclk1)
+        chip->w659 = !(chip->w156 || !chip->w383);
+
+    if (chip->hclk2)
+        chip->w660 = chip->w653;
+
+    if (chip->hclk1)
+        chip->w661 = chip->w651 | tms_color[chip->w660 & 15];
+
+    chip->w662 = chip->w657 ? 0 : chip->w661;
+
+    if (chip->hclk2)
+        chip->dac_sel = chip->w662;
+
+    chip->o_dac_r = dac_lut_rg[(chip->dac_sel >> 0) & 3];
+    chip->o_dac_g = dac_lut_rg[(chip->dac_sel >> 2) & 3];
+    chip->o_dac_b = dac_lut_b[(chip->dac_sel >> 4) & 3];
 }
 
-void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)
+static void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)
 {
     if (chip->hclk1)
         spr->w561 = spr->i1;
@@ -2589,7 +2657,7 @@ void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)
     spr->w606 = spr->w605 ? chip->hclk2 : 0;
 }
 
-void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr)
+static void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr)
 {
     if (spr->i1)
         spr->w607 = 0;

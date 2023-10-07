@@ -118,11 +118,33 @@ typedef struct {
     int w696[2];
     int w697;
     int w698[2];
-
-
-    int tm_w1;
-    int tm_w2;
-    int tm_w3;
+    int w699;
+    int w700[2];
+    int w701[2];
+    int w702[2];
+    int w703[2];
+    int w704[2];
+    int w705;
+    int w706;
+    int w707[2];
+    int w708[3];
+    int w709;
+    int noise_lfsr[2];
+    int w710[2];
+    int w711;
+    int w712;
+    int w713;
+    int w714;
+    int w715;
+    int w716;
+    int w717;
+    int w718;
+    int w719;
+    int w720;
+    int w721;
+    int w722;
+    float dac[4];
+    float o_dac;
 } vdpsms_psg_t;
 
 typedef struct {

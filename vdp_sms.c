@@ -2784,6 +2784,10 @@ static void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr)
     spr->w638 = spr->w640 ? chip->hclk2 : 0;
 }
 
+const float ympsg_vol[16] = {
+    1.f, 0.772f, 0.622f, 0.485f, 0.382f, 0.29f, 0.229f, 0.174f, 0.132f, 0.096f, 0.072f, 0.051f, 0.034f, 0.019f, 0.009f, 0.f
+};
+
 void SMSVDP_ClockPSG(vdpsms_psg_t *chip)
 {
     chip->clk1 = !chip->input.i_clk;
@@ -2910,13 +2914,13 @@ void SMSVDP_ClockPSG(vdpsms_psg_t *chip)
     }
 
     chip->w691 = 0;
-    if (chip->tm_w1)
+    if (chip->w700[1])
         chip->w691 |= chip->w688;
-    if (chip->tm_w1)
+    if (chip->w701[1])
         chip->w691 |= chip->w689;
-    if (chip->tm_w1)
+    if (chip->w702[1])
         chip->w691 |= chip->w690;
-    if (chip->tm_w1)
+    if (chip->w703[1])
     {
         if ((chip->w687 & 3) == 0)
             chip->w691 |= 16;
@@ -2933,7 +2937,7 @@ void SMSVDP_ClockPSG(vdpsms_psg_t *chip)
     
     if (chip->hclk1)
     {
-        chip->w694[0] = chip->tm_w1 ? 0 : chip->w698[1];
+        chip->w694[0] = chip->w709 ? 0 : chip->w698[1];
         chip->w695[0] = chip->w694[1];
         chip->w696[0] = chip->w695[1];
         chip->w698[0] = chip->w697;
@@ -2947,4 +2951,102 @@ void SMSVDP_ClockPSG(vdpsms_psg_t *chip)
     }
 
     chip->w697 = (chip->w696[1] + 1) & 1023;
+
+    chip->w699 = !(chip->w663[1] || chip->w700[1] || chip->w701[1] || chip->w702[1]);
+
+    if (chip->hclk1)
+    {
+        chip->w700[0] = chip->w699;
+        chip->w701[0] = chip->w700[1];
+        chip->w702[0] = chip->w701[1];
+        chip->w703[0] = chip->w702[1];
+    }
+    if (chip->hclk2)
+    {
+        chip->w700[1] = chip->w700[0];
+        chip->w701[1] = chip->w701[0];
+        chip->w702[1] = chip->w702[0];
+        chip->w703[1] = chip->w703[0];
+    }
+
+    if (chip->hclk2)
+        chip->w704[0] = (chip->w704[1] << 1) | chip->w693;
+    if (chip->hclk1)
+        chip->w704[1] = chip->w704[0];
+
+    if (chip->hclk1)
+        chip->w705 = chip->w700[1];
+
+    chip->w706 = chip->w705 ? (chip->w704[1] & 15) : 0;
+
+    if (chip->hclk2)
+        chip->w707[0] = (chip->w708[2] ? 0 : (chip->w707[1] ^ chip->w706)) ^ 15;
+    if (chip->hclk1)
+        chip->w707[1] = chip->w707[0] ^ 15;
+
+    if (chip->hclk1)
+    {
+        chip->w708[0] = chip->w663[1];
+        chip->w708[2] = chip->w708[1];
+    }
+    if (chip->hclk2)
+        chip->w708[1] = chip->w708[0];
+
+    if (chip->hclk2)
+        chip->w709 = chip->w708[2] || chip->w693;
+
+    if (chip->hclk1)
+        chip->w710[0] = chip->w711;
+    if (chip->hclk2)
+        chip->w710[1] = chip->w710[0];
+
+    if (chip->w712)
+    {
+        chip->noise_lfsr[0] = 0;
+        chip->noise_lfsr[1] = 0;
+    }
+    else if (chip->w710[1])
+        chip->noise_lfsr[0] = (chip->noise_lfsr[1] << 1) | chip->w713;
+    else
+        chip->noise_lfsr[1] = chip->noise_lfsr[0];
+
+    chip->w711 = !((chip->w687 & 3) == 3 ? (chip->w707[0] & 2) == 0 : (chip->w707[0] & 1) == 0);
+
+    chip->w712 = chip->w663[1] || chip->w686;
+
+    chip->w714 = ((chip->noise_lfsr[1] >> 15) ^ (chip->noise_lfsr[1] >> 12)) & 1;
+
+    chip->w713 = chip->w712 ? 0 : ((chip->noise_lfsr[1] & 0x7fff) == 0 ||
+        ((chip->w687 & 4) != 0 && chip->w714));
+
+    if (chip->w663[1])
+    {
+        chip->w715 = 15;
+        chip->w716 = 15;
+        chip->w717 = 15;
+        chip->w718 = 15;
+    }
+    else
+    {
+        if (chip->w682)
+            chip->w715 = chip->data_latch & 15;
+        if (chip->w683)
+            chip->w716 = chip->data_latch & 15;
+        if (chip->w684)
+            chip->w717 = chip->data_latch & 15;
+        if (chip->w685)
+            chip->w718 = chip->data_latch & 15;
+    }
+
+    chip->w719 = (chip->w707[0] & 8) != 0 ? 15 : chip->w715;
+    chip->w720 = (chip->w707[0] & 4) != 0 ? 15 : chip->w716;
+    chip->w721 = (chip->w707[0] & 2) != 0 ? 15 : chip->w717;
+    chip->w722 = (chip->noise_lfsr[1] & 0x4000) != 0 ? chip->w718 : 15;
+
+    chip->dac[0] = ympsg_vol[chip->w719];
+    chip->dac[1] = ympsg_vol[chip->w720];
+    chip->dac[2] = ympsg_vol[chip->w721];
+    chip->dac[3] = ympsg_vol[chip->w722];
+
+    chip->o_dac = chip->dac[0] + chip->dac[1] + chip->dac[2] + chip->dac[3];
 }

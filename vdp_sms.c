@@ -2783,3 +2783,168 @@ static void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr)
         spr->w640 = spr->i3;
     spr->w638 = spr->w640 ? chip->hclk2 : 0;
 }
+
+void SMSVDP_ClockPSG(vdpsms_psg_t *chip)
+{
+    chip->clk1 = !chip->input.i_clk;
+    chip->clk2 = chip->input.i_clk;
+
+    if (chip->clk1)
+        chip->w663[0] = chip->input.i_reset;
+    if (chip->clk2)
+        chip->w663[1] = !chip->w663[0];
+
+    chip->w664 = !chip->w663[1];
+
+    if (chip->clk1)
+        chip->w665[0] = chip->w664;
+    if (chip->clk2)
+        chip->w665[1] = !chip->w665[0];
+
+    chip->w666 = !(chip->w665[1] || chip->w664);
+
+    if (chip->clk1)
+        chip->w667[0] = !(chip->w666 || chip->w667[1]);
+    if (chip->clk2)
+        chip->w667[1] = chip->w667[0];
+
+    if (chip->clk1)
+        chip->w668[0] = !(chip->w666 ? 0 : (chip->w668[1] ^ chip->w667[1]));
+    if (chip->clk2)
+        chip->w668[1] = !chip->w668[0];
+
+    if (chip->clk2)
+        chip->w669 = !chip->w668[0];
+
+    chip->hclk1 = chip->w668[0] && !chip->w669;
+    chip->hclk2 = !chip->w668[0] && chip->w669;
+
+    if (chip->input.i_write)
+        chip->w670 = 0;
+    else if (chip->w672[1])
+        chip->w670 = 1;
+
+    chip->w671 = !(chip->w670 || chip->input.i_write);
+
+    if (chip->clk1)
+        chip->w672[0] = chip->w671;
+    if (chip->clk2)
+        chip->w672[1] = chip->w672[0];
+
+    if (chip->clk1)
+        chip->w673[0] = chip->w672[1];
+    if (chip->clk2)
+        chip->w673[1] = chip->w673[0];
+
+    if (chip->input.i_write)
+        chip->data_latch = chip->input.i_data & 255;
+
+    chip->w674 = chip->w672[1] && (chip->data_latch & 128) != 0;
+
+    if (chip->w674)
+        chip->w675 = (chip->data_latch >> 4) & 7;
+
+    chip->w676 = chip->w673[1] && chip->w675 == 0 && (chip->data_latch & 128) != 0;
+    chip->w677 = chip->w673[1] && chip->w675 == 2 && (chip->data_latch & 128) != 0;
+    chip->w678 = chip->w673[1] && chip->w675 == 4 && (chip->data_latch & 128) != 0;
+    chip->w679 = chip->w673[1] && chip->w675 == 4 && (chip->data_latch & 128) == 0;
+    chip->w680 = chip->w673[1] && chip->w675 == 2 && (chip->data_latch & 128) == 0;
+    chip->w681 = chip->w673[1] && chip->w675 == 0 && (chip->data_latch & 128) == 0;
+    chip->w682 = chip->w673[1] && chip->w675 == 1;
+    chip->w683 = chip->w673[1] && chip->w675 == 3;
+    chip->w684 = chip->w673[1] && chip->w675 == 5;
+    chip->w685 = chip->w673[1] && chip->w675 == 7;
+    chip->w686 = chip->w673[1] && chip->w675 == 6;
+
+    if (chip->w686)
+        chip->w687 = chip->data_latch & 7;
+    else if (chip->w663[1])
+        chip->w687 = 0;
+
+    if (chip->w663[1])
+        chip->w688 = 0;
+    else
+    {
+        if (chip->w676)
+        {
+            chip->w688 &= ~15;
+            chip->w688 |= chip->data_latch & 15;
+        }
+        if (chip->w681)
+        {
+            chip->w688 &= ~15;
+            chip->w688 |= chip->data_latch & 15;
+        }
+    }
+
+    if (chip->w663[1])
+        chip->w689 = 0;
+    else
+    {
+        if (chip->w677)
+        {
+            chip->w689 &= ~15;
+            chip->w689 |= chip->data_latch & 15;
+        }
+        if (chip->w680)
+        {
+            chip->w689 &= ~15;
+            chip->w689 |= chip->data_latch & 15;
+        }
+    }
+
+    if (chip->w663[1])
+        chip->w690 = 0;
+    else
+    {
+        if (chip->w678)
+        {
+            chip->w690 &= ~15;
+            chip->w690 |= chip->data_latch & 15;
+        }
+        if (chip->w679)
+        {
+            chip->w690 &= ~15;
+            chip->w690 |= chip->data_latch & 15;
+        }
+    }
+
+    chip->w691 = 0;
+    if (chip->tm_w1)
+        chip->w691 |= chip->w688;
+    if (chip->tm_w1)
+        chip->w691 |= chip->w689;
+    if (chip->tm_w1)
+        chip->w691 |= chip->w690;
+    if (chip->tm_w1)
+    {
+        if ((chip->w687 & 3) == 0)
+            chip->w691 |= 16;
+        if ((chip->w687 & 3) == 1)
+            chip->w691 |= 32;
+        if ((chip->w687 & 3) == 2)
+            chip->w691 |= 64;
+    }
+
+    if (chip->hclk1)
+        chip->w692 = chip->w691;
+
+    chip->w693 = chip->w692 <= chip->w698[0];
+    
+    if (chip->hclk1)
+    {
+        chip->w694[0] = chip->tm_w1 ? 0 : chip->w698[1];
+        chip->w695[0] = chip->w694[1];
+        chip->w696[0] = chip->w695[1];
+        chip->w698[0] = chip->w697;
+    }
+    if (chip->hclk2)
+    {
+        chip->w694[1] = chip->w694[0];
+        chip->w695[1] = chip->w695[0];
+        chip->w696[1] = chip->w696[0];
+        chip->w698[1] = chip->w698[0];
+    }
+
+    chip->w697 = (chip->w696[1] + 1) & 1023;
+}

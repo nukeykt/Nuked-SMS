@@ -2493,6 +2493,8 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     chip->o_dac_r = dac_lut_rg[(chip->dac_sel >> 0) & 3];
     chip->o_dac_g = dac_lut_rg[(chip->dac_sel >> 2) & 3];
     chip->o_dac_b = dac_lut_b[(chip->dac_sel >> 4) & 3];
+
+    SMSVDP_ClockPSG(&chip->psg);
 }
 
 static void VDPSMS_ClockSprite1(vdpsms_t *chip, vdpsms_spriteunit1_t *spr)
@@ -2785,7 +2787,7 @@ static void VDPSMS_ClockSprite2(vdpsms_t *chip, vdpsms_spriteunit2_t *spr)
 }
 
 const float ympsg_vol[16] = {
-    1.f, 0.772f, 0.622f, 0.485f, 0.382f, 0.29f, 0.229f, 0.174f, 0.132f, 0.096f, 0.072f, 0.051f, 0.034f, 0.019f, 0.009f, 0.f
+    1.f, 0.785f, 0.612f, 0.482f, 0.4f, 0.316f, 0.248f, 0.197f, 0.164f, 0.131f, 0.103f, 0.083f, 0.069f, 0.056f, 0.045f, 0.f
 };
 
 void SMSVDP_ClockPSG(vdpsms_psg_t *chip)

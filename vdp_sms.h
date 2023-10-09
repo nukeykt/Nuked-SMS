@@ -804,6 +804,8 @@ typedef struct {
     int w662;
     int dac_sel;
 
+    vdpsms_psg_t psg;
+
 
     int cpu_pal;
     int cpu_rd;

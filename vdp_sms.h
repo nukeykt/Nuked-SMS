@@ -4,6 +4,14 @@ typedef struct {
     int ad_i;
     int reset;
     int xin;
+    int hl;
+    int pal;
+    int rd;
+    int wr;
+    int iorq;
+    int a0;
+    int a6;
+    int a7;
 
 } vdpsms_input_t;
 
@@ -373,6 +381,7 @@ typedef struct {
     int w162;
     int w163;
     int w164;
+    int w164_;
     int w165;
     int w166;
     int w167;
@@ -827,6 +836,10 @@ typedef struct {
     int w740;
     int w741;
     int w742[2];
+    int w743;
+    int w744[2];
+    int w745[2];
+    int w746;
 
     vdpsms_psg_t psg;
 
@@ -847,8 +860,6 @@ typedef struct {
     int vram_data;
     int vram_data2;
     int vram_address;
-
-    int cpu_data;
 
     int color_index;
     int color_palette;

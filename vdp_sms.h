@@ -2,6 +2,8 @@
 
 typedef struct {
     int ad_i;
+    int reset;
+    int xin;
 
 } vdpsms_input_t;
 
@@ -804,6 +806,28 @@ typedef struct {
     int w662;
     int dac_sel;
 
+    int w723[2];
+    int w724[2];
+    int w725;
+    int w726;
+    int w727;
+    int w728[2];
+    int w729[2];
+    int w730[2];
+    int w731;
+    int zclk;
+    int w732;
+    int w733;
+    int w734[2];
+    int w735[2];
+    int w736;
+    int w737;
+    int w738;
+    int w739;
+    int w740;
+    int w741;
+    int w742[2];
+
     vdpsms_psg_t psg;
 
 
@@ -867,6 +891,7 @@ typedef struct {
     int o_dac_g;
     int o_dac_b;
 
+    int o_zclk;
 
 
     int tm_w1;

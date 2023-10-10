@@ -34,6 +34,90 @@ static int dac_lut_b[4] = {
 
 void VDPSMS_Clock(vdpsms_t *chip, int clk)
 {
+    chip->clk1 = !chip->input.xin;
+    chip->clk2 = chip->input.xin;
+
+    if (chip->clk2)
+        chip->w723[0] = chip->input.reset;
+    if (chip->clk1)
+        chip->w723[1] = chip->w723[0];
+
+    if (chip->clk2)
+        chip->w724[0] = chip->w723[1];
+    if (chip->clk1)
+        chip->w724[1] = !chip->w724[0];
+    
+    if (chip->clk2)
+        chip->w725 = chip->w724[1] || chip->input.reset;
+    if (chip->clk1)
+        chip->w726 = !chip->w725;
+
+    chip->w727 = !(chip->w726 || chip->w728[1] || chip->w729[1]);
+
+    if (chip->clk2)
+        chip->w728[0] = chip->w727;
+    if (chip->clk1)
+        chip->w728[1] = chip->w728[0];
+
+    if (chip->clk2)
+        chip->w729[0] = chip->w728[1];
+    if (chip->clk1)
+        chip->w729[1] = chip->w729[0];
+
+    if (chip->clk2)
+        chip->w730[0] = chip->w729[1];
+    if (chip->clk1)
+        chip->w730[1] = chip->w730[0];
+
+    if (chip->clk2)
+        chip->w731 = chip->w728[1];
+
+    if (chip->w731)
+        chip->zclk = 0;
+    else if (chip->w730[1])
+        chip->zclk = 1;
+
+    chip->o_zclk = chip->zclk;
+
+    if (chip->clk1)
+        chip->w739 = !chip->w725;
+    if (chip->clk1)
+        chip->w741 = !chip->w740;
+    if (chip->clk2)
+        chip->w740 = chip->w739 || chip->w741;
+    if (chip->clk1)
+        chip->w742[0] = chip->w740;
+    if (chip->clk2)
+        chip->w742[1] = !chip->w742[0];
+
+    chip->hclk1 = chip->w742[1];
+    chip->hclk2 = !chip->w742[1];
+
+    if (chip->hclk2)
+        chip->w732 = chip->input.reset;
+
+    chip->w733 = !chip->w728[1];
+
+    if (chip->hclk2)
+        chip->w734[0] = chip->w733;
+    if (chip->hclk1)
+        chip->w734[1] = chip->w734[0];
+
+    if (chip->hclk2)
+        chip->w735[0] = chip->w734[1];
+    if (chip->hclk1)
+        chip->w735[1] = !chip->w735[0];
+
+    chip->w736 = chip->w735[1] ? chip->hclk2 : 0;
+
+    if (chip->hclk1)
+        chip->w737 = chip->w732;
+
+    if (chip->w736)
+        chip->w738 = chip->w737;
+
+    chip->reset1 = !chip->w738;
+
     if (chip->hclk2)
         chip->w1 = chip->input.ad_i;
     if (chip->hclk1)
@@ -883,8 +967,6 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     chip->reg_sel[8] = (chip->reg_addr & 0xf00) == 0x800 && chip->w211;
     chip->reg_sel[9] = (chip->reg_addr & 0xf00) == 0x900 && chip->w211;
     chip->reg_sel[10] = (chip->reg_addr & 0xf00) == 0xa00 && chip->w211;
-
-    chip->reset1 = chip->tm_w1;
 
     if (chip->reg_sel[0])
     {
@@ -2494,6 +2576,10 @@ void VDPSMS_Clock(vdpsms_t *chip, int clk)
     chip->o_dac_g = dac_lut_rg[(chip->dac_sel >> 2) & 3];
     chip->o_dac_b = dac_lut_b[(chip->dac_sel >> 4) & 3];
 
+    chip->psg.input.i_clk = chip->zclk;
+    chip->psg.input.i_reset = chip->tm_w1;
+    chip->psg.input.i_write = !(chip->cpu_wr || chip->cpu_iorq || chip->cpu_a7 || !chip->cpu_a6);
+    chip->psg.input.i_data = chip->cpu_data;
     SMSVDP_ClockPSG(&chip->psg);
 }
 

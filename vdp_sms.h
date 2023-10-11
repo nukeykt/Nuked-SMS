@@ -12,7 +12,12 @@ typedef struct {
     int a0;
     int a6;
     int a7;
-
+    int a14;
+    int a15;
+    int csync;
+    int nmi;
+    int mreq;
+    int data;
 } vdpsms_input_t;
 
 typedef struct {
@@ -68,12 +73,6 @@ typedef struct {
     int w605;
     int w606;
     int w639[3];
-
-    int tm_w1;
-    int tm_w2;
-    int tm_w3;
-    int tm_w4;
-
 } vdpsms_spriteunit1_t; // mode 4 & tms sprite
 
 typedef struct {
@@ -196,23 +195,10 @@ typedef struct {
     int w637[3];
     int w638;
     int w640;
-
-    int tm_w1;
-    int tm_w2;
-    int tm_w3;
-    int tm_w4;
-
 } vdpsms_spriteunit2_t; // mode 4 sprite
 
 typedef struct {
     vdpsms_input_t input;
-
-    int o_ad;
-    int o_ad_z;
-    int o_oe;
-    int o_we0;
-    int o_we1;
-    int o_ce;
 
     int w1;
     int w2_h;
@@ -840,6 +826,22 @@ typedef struct {
     int w744[2];
     int w745[2];
     int w746;
+    int w747;
+    int w748[2];
+    int w749;
+    int w750;
+    int w751[2];
+    int w752;
+    int w753;
+    int w754[2];
+    int w755[8];
+    int w756;
+    int w757;
+    int w758[2];
+    int nmi_dff[2];
+    int w759;
+    int w760;
+    int w761;
 
     vdpsms_psg_t psg;
 
@@ -904,14 +906,28 @@ typedef struct {
 
     int o_zclk;
 
+    int o_csync;
 
-    int tm_w1;
-    int tm_w2;
-    int tm_w3;
-    int tm_w4;
-    int tm_w5;
-    int tm_w6;
-    int tm_w7;
-    int tm_w8;
-    int tm_w9;
+    int o_pcp;
+    int o_cbt;
+
+    int o_nmi;
+
+    int o_kbsel;
+    int o_csram;
+    int o_exm1;
+    int o_exm2;
+
+    int o_ys;
+
+    int o_ad;
+    int o_ad_z;
+    int o_oe;
+    int o_we0;
+    int o_we1;
+    int o_ce;
+    int o_int;
+
+    int o_data;
+    int o_data_z;
 } vdpsms_t;

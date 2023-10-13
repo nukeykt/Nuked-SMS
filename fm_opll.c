@@ -54,11 +54,11 @@ static const fmopll_patch_t fmopll_patch_ym2413[fmopll_patch_max] = {
 
 void FMOPLL_Prescaler(fm_opll_t *chip)
 {
-    if (!chip->mclk)
+    if (!chip->input.mclk)
     {
-        chip->ic_latch[0] = chip->ic;
+        chip->ic_latch[0] = chip->input.ic;
         chip->prescaler_cnt[0] = (chip->prescaler_cnt[1] + 1) & 3;
-        if (chip->ic && !chip->ic_latch[1])
+        if (chip->input.ic && !chip->ic_latch[1])
         {
             chip->prescaler_cnt[0] = 0;
         }
@@ -82,7 +82,7 @@ void FMOPLL_Prescaler(fm_opll_t *chip)
 
 void FMOPLL_DoShiftRegisters(fm_opll_t *chip, int sel)
 {
-    int i, j;
+    int j;
     int to = sel;
     int from = sel ^ 1;
     int rot = sel == 0 ? 1 : 0;
@@ -147,7 +147,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->patch.vib[0] = (chip->data_latch >> 6) & 0x01;
         chip->patch.am[0] = (chip->data_latch >> 7) & 0x01;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->patch.multi[0] = 0;
         chip->patch.ksr[0] = 0;
@@ -163,7 +163,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->patch.vib[1] = (chip->data_latch >> 6) & 0x01;
         chip->patch.am[1] = (chip->data_latch >> 7) & 0x01;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->patch.multi[1] = 0;
         chip->patch.ksr[1] = 0;
@@ -176,7 +176,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->patch.ksl[0] = (chip->data_latch >> 6) & 0x03;
         chip->patch.tl = chip->data_latch & 0x3f;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->patch.ksl[0] = 0;
         chip->patch.tl = 0;
@@ -188,7 +188,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->patch.dm = (chip->data_latch >> 3) & 0x01;
         chip->patch.fb = chip->data_latch & 0x07;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->patch.ksl[1] = 0;
         chip->patch.dc = 0;
@@ -200,7 +200,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->patch.dr[0] = chip->data_latch & 0x0f;
         chip->patch.ar[0] = (chip->data_latch >> 4) & 0x0f;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->patch.dr[0] = 0;
         chip->patch.ar[0] = 0;
@@ -210,7 +210,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->patch.dr[1] = chip->data_latch & 0x0f;
         chip->patch.ar[1] = (chip->data_latch >> 4) & 0x0f;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->patch.dr[1] = 0;
         chip->patch.ar[1] = 0;
@@ -220,7 +220,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->patch.rr[0] = chip->data_latch & 0x0f;
         chip->patch.sl[0] = (chip->data_latch >> 4) & 0x0f;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->patch.rr[0] = 0;
         chip->patch.sl[0] = 0;
@@ -230,7 +230,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->patch.rr[1] = chip->data_latch & 0x0f;
         chip->patch.sl[1] = (chip->data_latch >> 4) & 0x0f;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->patch.rr[1] = 0;
         chip->patch.sl[1] = 0;
@@ -240,7 +240,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->rhythm = (chip->data_latch >> 5) & 0x01;
         chip->rhythm_kon = chip->data_latch & 0x1f;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->rhythm = 0;
         chip->rhythm_kon = 0;
@@ -249,7 +249,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
     {
         chip->testmode = chip->data_latch & 0x0f;
     }
-    else if (chip->ic)
+    else if (chip->input.ic)
     {
         chip->testmode = 0;
     }
@@ -260,7 +260,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->chan_reg_addr = chip->data_latch & 0x3f;
     if (chip->write1 && chip->update_chan_regs)
         chip->chan_data = chip->data_latch;
-    else if (chip->ic)
+    else if (chip->input.ic)
         chip->chan_data = 0;
 
     if (chip->clk2)
@@ -269,7 +269,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         chip->chan_cnt[1] = chip->chan_cnt[0];
     }
 
-    chan_update = chip->update_chan_latch[1] && !chip->ic && !chip->write0;
+    chan_update = chip->update_chan_latch[1] && !chip->input.ic && !chip->write0;
     if (chip->clk1)
     {
         chip->update_chan_latch[0] = chan_update || (chip->write1 && chip->update_chan_regs);
@@ -285,7 +285,7 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
         update20 = (chip->chan_reg_addr & 0x30) == 0x20;
         update30 = (chip->chan_reg_addr & 0x30) == 0x30;
     }
-    if (chip->ic)
+    if (chip->input.ic)
     {
         update10 = 1;
         update20 = 1;
@@ -414,14 +414,14 @@ void FMOPLL_UpdateRegisters(fm_opll_t* chip)
 
 void FMOPLL_UpdateIO(fm_opll_t *chip)
 {
-    if (!chip->cs && !chip->we && !chip->ic)
+    if (!chip->input.cs && !chip->input.we && !chip->input.ic)
     {
-        chip->data_latch = chip->in_data & 255;
-        if (!chip->a0 && !chip->write0)
+        chip->data_latch = chip->input.in_data & 255;
+        if (!chip->input.a0 && !chip->write0)
             chip->write_sr0 = 1;
         if (chip->write0)
             chip->write_sr0 = 0;
-        if (chip->a0 && !chip->write1)
+        if (chip->input.a0 && !chip->write1)
             chip->write_sr1 = 1;
         if (chip->write1)
             chip->write_sr1 = 0;
@@ -439,7 +439,7 @@ void FMOPLL_UpdateIO2(fm_opll_t *chip)
         chip->write_sr0 = 0;
     if (chip->write1)
         chip->write_sr1 = 0;
-    if (!chip->mclk)
+    if (!chip->input.mclk)
     {
         chip->write0_latch[0] = chip->write0_latch[0];
         chip->write0_latch[1] = chip->write0_latch[0];
@@ -516,14 +516,14 @@ void FMOPLL_FSM(fm_opll_t *chip)
     if (chip->clk1)
     {
         chip->ic_latch2[0] = chip->ic_latch2[1] << 1;
-        chip->ic_latch2[0] |= chip->ic;
-        reset = chip->ic && !(chip->ic_latch2[1] & 2);
+        chip->ic_latch2[0] |= chip->input.ic;
+        reset = chip->input.ic && !(chip->ic_latch2[1] & 2);
         inc = (chip->fsm_cnt1[1] & 5) == 5;
         if (inc || reset)
             chip->fsm_cnt1[0] = 0;
         else
             chip->fsm_cnt1[0] = (chip->fsm_cnt1[1] + 1) & 7;
-        if ((inc && (chip->fsm_cnt2[0] & 2) == 2) || reset)
+        if ((inc && (chip->fsm_cnt2[1] & 2) == 2) || reset)
             chip->fsm_cnt2[0] = 0;
         else
             chip->fsm_cnt2[0] = (chip->fsm_cnt2[1] + inc) & 3;
@@ -633,7 +633,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
         chip->patch_cur.tl = chip->volume_latch1 << 2;
     if (chip->inst0_sel && chip->modcar_sel_latch)
     {
-        if (chip->ic && chip->write1 && chip->reg_write[0][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[0][1])
         {
             chip->patch_cur.multi &= chip->patch.multi[0];
             chip->patch_cur.vib &= chip->patch.vib[0];
@@ -649,7 +649,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
             chip->patch_cur.am = chip->patch.am[0];
             chip->patch_cur.ksr = chip->patch.ksr[0];
         }
-        if (chip->ic && chip->write1 && chip->reg_write[2][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[2][1])
         {
             chip->patch_cur.ksl &= chip->patch.ksl[0];
             chip->patch_cur.tl &= chip->patch.tl;
@@ -659,7 +659,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
             chip->patch_cur.ksl = chip->patch.ksl[0];
             chip->patch_cur.tl = chip->patch.tl;
         }
-        if (chip->ic && chip->write1 && chip->reg_write[4][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[4][1])
         {
             chip->patch_cur.ar &= chip->patch.ar[0];
             chip->patch_cur.dr &= chip->patch.dr[0];
@@ -669,7 +669,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
             chip->patch_cur.ar = chip->patch.ar[0];
             chip->patch_cur.dr = chip->patch.dr[0];
         }
-        if (chip->ic && chip->write1 && chip->reg_write[6][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[6][1])
         {
             chip->patch_cur.sl &= chip->patch.sl[0];
             chip->patch_cur.dr &= chip->patch.dr[0];
@@ -682,7 +682,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
     }
     if (chip->inst0_sel && !chip->modcar_sel_latch)
     {
-        if (chip->ic && chip->write1 && chip->reg_write[1][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[1][1])
         {
             chip->patch_cur.multi &= chip->patch.multi[1];
             chip->patch_cur.vib &= chip->patch.vib[1];
@@ -698,7 +698,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
             chip->patch_cur.am = chip->patch.am[1];
             chip->patch_cur.ksr = chip->patch.ksr[1];
         }
-        if (chip->ic && chip->write1 && chip->reg_write[3][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[3][1])
         {
             chip->patch_cur.ksl &= chip->patch.ksl[1];
         }
@@ -708,7 +708,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
             chip->patch_cur.dc = chip->patch.dc;
             chip->patch_cur.dm = chip->patch.dm;
         }
-        if (chip->ic && chip->write1 && chip->reg_write[5][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[5][1])
         {
             chip->patch_cur.ar &= chip->patch.ar[1];
             chip->patch_cur.dr &= chip->patch.dr[1];
@@ -718,7 +718,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
             chip->patch_cur.ar = chip->patch.ar[1];
             chip->patch_cur.dr = chip->patch.dr[1];
         }
-        if (chip->ic && chip->write1 && chip->reg_write[7][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[7][1])
         {
             chip->patch_cur.sl &= chip->patch.sl[1];
             chip->patch_cur.dr &= chip->patch.dr[1];
@@ -731,7 +731,7 @@ void FMOPLL_InstrumentCtrl(fm_opll_t *chip)
     }
     if (chip->inst0_sel)
     {
-        if (chip->ic && chip->write1 && chip->reg_write[3][1])
+        if (chip->input.ic && chip->write1 && chip->reg_write[3][1])
         {
             chip->patch_cur.dc &= chip->patch.dc;
             chip->patch_cur.dm &= chip->patch.dm;
@@ -790,7 +790,6 @@ void FMOPLL_Vibrato(fm_opll_t *chip)
     int vib_step;
     int vib_val;
     int vib_add;
-    int b10;
     chip->trem_step = ((chip->lfo_cnt[1] & 63) + chip->fsm_out[10]) >> 6;
     vib_step = ((chip->lfo_cnt[1] & 1023) + chip->fsm_out[10]) >> 10;
     if (chip->clk1)
@@ -1034,7 +1033,7 @@ void FMOPLL_Tremolo(fm_opll_t *chip)
             && chip->fsm_out[11];
         if (chip->trem_step_latch && trem_of)
             chip->trem_dir[0] ^= 1;
-        if (chip->ic || (chip->testmode & 2) != 0)
+        if (chip->input.ic || (chip->testmode & 2) != 0)
             chip->trem_dir[0] = 0;
 
         bit = chip->trem_sr[1] & 1;
@@ -1049,7 +1048,7 @@ void FMOPLL_Tremolo(fm_opll_t *chip)
         chip->trem_sr[0] = chip->trem_sr[1] >> 1;
         
         bit &= 1;
-        if (chip->ic || (chip->testmode & 2) != 0)
+        if (chip->input.ic || (chip->testmode & 2) != 0)
             bit = 0;
         chip->trem_sr[0] |= bit << 8;
 
@@ -1080,13 +1079,13 @@ void FMOPLL_EnvTimer(fm_opll_t *chip)
             bit = chip->eg_timer_bit_latch[1];
         chip->eg_timer_sr[0] |= bit << 17;
         chip->eg_timer_sr_masked[0] |= (bit & chip->eg_timer_mask[1]) << 17;
-        chip->eg_ic_latch[0] = chip->ic;
+        chip->eg_ic_latch[0] = chip->input.ic;
         chip->eg_sync_latch[0] = chip->fsm_out[10];
         mask_reset = chip->eg_ic_latch[1] || chip->eg_sync_latch[1];
         chip->eg_timer_mask[0] = mask_reset || (chip->eg_timer_mask[1] && !bit);
         chip->eg_timer_prescaler[0] = chip->eg_timer_prescaler[1];
         chip->eg_timer_prescaler[0] += chip->fsm_out[10];
-        if (chip->ic)
+        if (chip->input.ic)
             chip->eg_timer_prescaler[0] = 0;
         chip->eg_subcnt2_latch = (chip->eg_timer_prescaler[1] & 3) != 3;
         chip->eg_subcnt1_latch[0] = (chip->eg_timer_prescaler[1] & 1) != 1;
@@ -1167,7 +1166,7 @@ void FMOPLL_EnvState(fm_opll_t *chip)
         b1 = chip->eg_state[1][1] & 1;
         state = b1 * 2 + b0;
 
-        chip->eg_resetlevel = chip->ic ||
+        chip->eg_resetlevel = chip->input.ic ||
             ((chip->eg_off_latch[1] & 2) && state != eg_state_attack && !(chip->eg_dokon[1] & 2));
         chip->eg_instantattack = (chip->eg_dokon[1] & 2) != 0 && chip->eg_rate_15;
 
@@ -1201,7 +1200,7 @@ void FMOPLL_EnvState(fm_opll_t *chip)
             }
         }
 
-        if (chip->ic)
+        if (chip->input.ic)
             nextstate = eg_state_release;
 
         b0 = nextstate & 1;
@@ -1352,8 +1351,6 @@ void FMOPLL_EnvKSLTL(fm_opll_t *chip)
     if (chip->clk1)
     {
         int ksl;
-        int ksl_sum;
-        int ksl_of;
         int sum;
         ksl = eg_ksltable[chip->fnum >> 5] ^ 127;
 
@@ -1775,13 +1772,13 @@ void FMOPLL_Output(fm_opll_t *chip)
         chip->out_r = val2;
 }
 
-void FMOPLL_Clock(fm_opll_t *chip, int mclk)
+void FMOPLL_Clock(fm_opll_t *chip)
 {
-    chip->mclk = mclk;
+    FMOPLL_UpdateIO(chip);
     FMOPLL_Prescaler(chip);
     FMOPLL_UpdateIO2(chip);
 
-    if (chip->oclk1 != chip->clk1 || chip->oclk2 != chip->clk2)
+    //if (chip->oclk1 != chip->clk1 || chip->oclk2 != chip->clk2)
     {
         FMOPLL_FSM(chip);
         FMOPLL_FSMTable(chip);
@@ -1803,36 +1800,19 @@ void FMOPLL_Clock(fm_opll_t *chip, int mclk)
         FMOPLL_Operator(chip);
     }
     FMOPLL_Output(chip);
-    chip->oclk1 = chip->clk1;
-    chip->oclk2 = chip->clk2;
+    //chip->oclk1 = chip->clk1;
+    //chip->oclk2 = chip->clk2;
 }
 
 
-void FMOPLL_SetCS(fm_opll_t *chip, int cs)
+void FMOPLL_Clock2(fm_opll_t *chip)
 {
-    chip->cs = !cs;
-    FMOPLL_UpdateIO(chip);
-}
+    if (!memcmp(&chip->input, &chip->o_input, sizeof(fmopll_input_t)))
+        return;
 
-void FMOPLL_SetWrite(fm_opll_t* chip, int we)
-{
-    chip->we = !we;
-    FMOPLL_UpdateIO(chip);
-}
-
-void FMOPLL_SetAddress(fm_opll_t* chip, int a)
-{
-    chip->a0 = a & 1;
-    FMOPLL_UpdateIO(chip);
-}
-
-void FMOPLL_SetData(fm_opll_t* chip, int data)
-{
-    chip->in_data = data & 255;
-    FMOPLL_UpdateIO(chip);
-}
-
-void FMOPLL_SetIC(fm_opll_t* chip, int ic)
-{
-    chip->ic = ic;
+    chip->o_input = chip->input;
+    FMOPLL_Clock(chip);
+    FMOPLL_Clock(chip);
+    FMOPLL_Clock(chip);
+    FMOPLL_Clock(chip);
 }

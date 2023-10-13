@@ -28,6 +28,7 @@ typedef struct {
 
 typedef struct {
     io_smsu_input_t input;
+    io_smsu_input_t o_input;
 
     int reg_3e_2[2];
     int reg_3e_3[2];
@@ -58,3 +59,4 @@ typedef struct {
     int o_hl;
 } io_smsu_t;
 
+void IO_SMSU_Clock2(io_smsu_t *chip);

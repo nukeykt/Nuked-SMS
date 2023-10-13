@@ -1,6 +1,15 @@
 #pragma once
 
 typedef struct {
+    int mclk;
+    int cs;
+    int we;
+    int a0;
+    int ic;
+    int in_data;
+} fmopll_input_t;
+
+typedef struct {
     int tl;
     int dc;
     int dm;
@@ -36,12 +45,7 @@ typedef struct {
 
 typedef struct {
     // input
-    int mclk;
-    int ic;
-    int a0;
-    int cs;
-    int we;
-    int in_data;
+    fmopll_input_t input, o_input;
 
     int ic_latch[2];
     int ic_latch2[2];
@@ -240,3 +244,4 @@ typedef struct {
     int oclk2;
 } fm_opll_t;
 
+void FMOPLL_Clock2(fm_opll_t *chip);

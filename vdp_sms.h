@@ -43,7 +43,7 @@ typedef struct {
     int w574;
     int w575;
     int w576;
-    int w577;
+    int w577[2];
     int w578;
     int w579;
     int w580[4];
@@ -199,6 +199,7 @@ typedef struct {
 
 typedef struct {
     vdpsms_input_t input;
+    vdpsms_input_t o_input;
 
     int w1;
     int w2_h;
@@ -396,7 +397,7 @@ typedef struct {
     int w188; // sync trigger
     int w189; // sync trigger
     int w190;
-    int w191;
+    int w191[2];
     int w192;
     int w193[2];
     int w194[2];
@@ -406,7 +407,8 @@ typedef struct {
     int w198;
     int w199;
     int w200;
-    int w201[2];
+    int w201;
+    int w201_[2];
     int w202[2];
     int w203;
     int w204[2];
@@ -648,7 +650,8 @@ typedef struct {
     int w435[2];
     int w436;
     int w437;
-    int w438[4];
+    int w438;
+    int w438_[4];
     int w439;
     int w440;
     int w441;
@@ -706,6 +709,7 @@ typedef struct {
     int w491;
     int w492;
     int w493;
+    int w494;
     int w495;
     int w496;
     int w497;
@@ -715,7 +719,7 @@ typedef struct {
     int w501[6];
     int w502;
     int w503;
-    int w504;
+    int w504[2];
     int w505;
     int w506;
     int w507;
@@ -931,3 +935,5 @@ typedef struct {
     int o_data;
     int o_data_z;
 } vdpsms_t;
+
+void VDPSMS_Clock2(vdpsms_t *chip);

@@ -1,5 +1,6 @@
 // 315-5216 core
 
+#include <string.h>
 #include "io_smsu.h"
 
 static void IO_SMSU_UpdateDFFS(int *reg, int set, int value, int clk)
@@ -139,4 +140,16 @@ void IO_SMSU_Clock(io_smsu_t *chip)
     chip->o_ce2 = chip->input.mreq || chip->reg_3e_5[1];
     chip->o_ce3 = chip->input.mreq || chip->reg_3e_6[1];
     chip->o_ce4 = chip->input.mreq || chip->reg_3e_7[1];
+}
+
+void IO_SMSU_Clock2(io_smsu_t *chip)
+{
+    if (!memcmp(&chip->input, &chip->o_input, sizeof(io_smsu_input_t)))
+        return;
+
+    chip->o_input = chip->input;
+
+    IO_SMSU_Clock(chip);
+    IO_SMSU_Clock(chip);
+    IO_SMSU_Clock(chip);
 }

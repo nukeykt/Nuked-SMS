@@ -1296,14 +1296,14 @@ void VDPSMS_Clock(vdpsms_t *chip)
         chip->w300 = chip->w299;
 
     chip->w301[0] = !(chip->w559 || chip->w469 || chip->w444 || (spr_mask & 1) != 0 || (spr_mask2 & 1) != 0);
-    chip->w301[1] = !(chip->w559 || chip->w469 || chip->w444 || (spr_mask & 3) != 0 || (spr_mask2 & 2) != 0);
-    chip->w301[2] = !(chip->w559 || chip->w469 || chip->w444 || (spr_mask & 7) != 0 || (spr_mask2 & 4) != 0);
-    chip->w301[3] = !(chip->w559 || chip->w469 || chip->w444 || (spr_mask & 15) != 0 || (spr_mask2 & 8) != 0);
-    chip->w301[4] = !(chip->w559 || chip->w469 || chip->w444 || (spr_mask & 31) != 0);
-    chip->w301[5] = !(chip->w559 || chip->w469 || chip->w444 || (spr_mask & 63) != 0);
-    chip->w301[6] = !(chip->w559 || chip->w469 || chip->w444 || (spr_mask & 127) != 0);
-    chip->w301[7] = !(chip->w559 || chip->w469 || chip->w444 || (spr_mask & 255) != 0);
-    chip->w301[8] = !((spr_mask & 255) != 0);
+    chip->w301[1] = !(chip->w559 || chip->w469 || chip->w444 || chip->w301[0] || (spr_mask & 2) != 0 || (spr_mask2 & 2) != 0);
+    chip->w301[2] = !(chip->w559 || chip->w469 || chip->w444 || chip->w301[0] || chip->w301[1] || (spr_mask & 4) != 0 || (spr_mask2 & 4) != 0);
+    chip->w301[3] = !(chip->w559 || chip->w469 || chip->w444 || chip->w301[0] || chip->w301[1] || chip->w301[2] || (spr_mask & 8) != 0 || (spr_mask2 & 8) != 0);
+    chip->w301[4] = !(chip->w559 || chip->w469 || chip->w444 || chip->w301[0] || chip->w301[1] || chip->w301[2] || chip->w301[3] || (spr_mask & 16) != 0);
+    chip->w301[5] = !(chip->w559 || chip->w469 || chip->w444 || chip->w301[0] || chip->w301[1] || chip->w301[2] || chip->w301[3] || chip->w301[4] || (spr_mask & 32) != 0);
+    chip->w301[6] = !(chip->w559 || chip->w469 || chip->w444 || chip->w301[0] || chip->w301[1] || chip->w301[2] || chip->w301[3] || chip->w301[4] || chip->w301[5] || (spr_mask & 64) != 0);
+    chip->w301[7] = !(chip->w559 || chip->w469 || chip->w444 || chip->w301[0] || chip->w301[1] || chip->w301[2] || chip->w301[3] || chip->w301[4] || chip->w301[5] || chip->w301[6] || (spr_mask & 128) != 0);
+    chip->w301[8] = !(chip->w301[0] || chip->w301[1] || chip->w301[2] || chip->w301[3] || chip->w301[4] || chip->w301[5] || chip->w301[6] || chip->w301[7]);
 
     chip->w302 = !chip->w301[8];
 
@@ -1731,7 +1731,7 @@ void VDPSMS_Clock(vdpsms_t *chip)
     if (chip->hclk2)
         chip->w405[1] = chip->w405[0];
 
-    chip->w406 = (chip->w431 & 2) != 0 ? ((chip->w402 ^ 7) & 7) : (chip->w402 ^ 7);
+    chip->w406 = (chip->w431 & 2) == 0 ? ((chip->w402 ^ 7) & 7) : (chip->w402 & 7);
 
     chip->w407 = !(chip->reg_80_b2 && (chip->w343[6] || chip->w343[7]));
 
@@ -1829,7 +1829,7 @@ void VDPSMS_Clock(vdpsms_t *chip)
     if (chip->hclk1)
         chip->w427[0] = chip->w418[3] ? chip->w426 : chip->w427[1];
     if (chip->hclk2)
-        chip->w427[1] = chip->w418[0];
+        chip->w427[1] = chip->w427[0];
 
     if (chip->hclk1)
         chip->w428 = chip->reg_80_b2 && chip->w364;
@@ -1968,9 +1968,9 @@ void VDPSMS_Clock(vdpsms_t *chip)
     chip->w470 = !chip->reg_80_b2;
 
     if (chip->hclk1)
-        chip->w471 = !(chip->w359 && chip->w470);
+        chip->w471 = !(chip->w359[1] && chip->w470);
 
-    chip->w472 = !(chip->w359 && chip->w470);
+    chip->w472 = !(chip->w359[1] && chip->w470);
 
 
     if (chip->hclk1)
@@ -2445,7 +2445,7 @@ void VDPSMS_Clock(vdpsms_t *chip)
     if (chip->hclk1)
         chip->w661 = chip->w651 | tms_color[chip->w660 & 15];
 
-    chip->w662 = chip->w657 ? 0 : chip->w661;
+    chip->w662 = chip->w657[1] ? 0 : chip->w661;
 
     if (chip->hclk2)
         chip->dac_sel = chip->w662;
@@ -2531,7 +2531,7 @@ void VDPSMS_Clock(vdpsms_t *chip)
     chip->o_ys = chip->w758[1];
 
 
-    if (chip->w55)
+    if (chip->w55[1])
         chip->w759 = 0;
     else if (chip->w263)
         chip->w759 = 1;
@@ -2612,10 +2612,10 @@ static void VDPSMS_VRAMAddressCalc(vdpsms_t *chip)
         vram_calc(&update, &value, 0x3800, chip->reg_spr << 11);
     if (chip->w231)
         vram_calc(&update, &value, 0x3fff, chip->reg_addr);
-    if (chip->w394)
-        vram_calc(&update, &value, 0xffc, ((chip->w396 & 31) << 2) | (((chip->w402 >> 3) & 3) << 7) | ((chip->w411 & 7) << 9));
+    if (chip->w395)
+        vram_calc(&update, &value, 0x7fe, ((chip->w396 & 31) << 1) | (((chip->w402 >> 3) & 3) << 6) | ((chip->w411 & 7) << 8));
     if (chip->w409)
-        vram_calc(&update, &value, 0x3c, ((chip->w406 << 2) | chip->w405[1]) << 2);
+        vram_calc(&update, &value, 0x1e, ((chip->w406 << 1) | chip->w405[1]) << 1);
     if (chip->w434)
         vram_calc(&update, &value, 0x3fe0, chip->w430 << 5);
     if (chip->w458)
@@ -2630,6 +2630,9 @@ static void VDPSMS_VRAMAddressCalc(vdpsms_t *chip)
         vram_calc(&update, &value, 0x18, (chip->w522[0] & 8) | (((chip->w313 & 2) ^ 2) << 3));
     if (chip->w540)
         vram_calc(&update, &value, 0x2, (chip->w537[1] & 2) ^ 2);
+
+    if (chip->reg_addr == 0x3800)
+        chip->reg_addr += 0;
 
     chip->vram_address &= ~update;
     chip->vram_address |= value & update;

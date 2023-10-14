@@ -1,13 +1,21 @@
 #include <stdio.h>
 #include <stdint.h>
+#define SDL_MAIN_HANDLED
+#include "SDL.h"
 #include "z80.h"
 #include "vdp_sms.h"
 #include "fm_opll.h"
 #include "io_smsu.h"
+#include "video.h"
 
 unsigned char ram[8192];
 
 unsigned char rom[8192];
+
+unsigned char vram[16384];
+int vram_address;
+int vram_ce_o;
+int vram_ad;
 
 int address;
 int data;
@@ -16,9 +24,9 @@ int mreq;
 int wr;
 int rd;
 int reset;
-int vram_ad;
 int csync;
 int nmi; // pause button
+int pal = 0;
 
 z80_t z80;
 vdpsms_t vdp;
@@ -124,7 +132,7 @@ static void emu_loop(void)
         vdp.input.reset = reset;
         vdp.input.ad_i = vram_ad; // TODO
         vdp.input.hl = io.o_hl;
-        vdp.input.pal = 0;
+        vdp.input.pal = pal;
         vdp.input.rd = rd;
         vdp.input.wr = wr;
         vdp.input.iorq = iorq;
@@ -138,6 +146,21 @@ static void emu_loop(void)
         vdp.input.mreq = mreq;
         vdp.input.data = data;
         VDPSMS_Clock2(&vdp);
+
+        // vram
+
+        if (!vdp.o_ad_z)
+            vram_ad = vdp.o_ad;
+
+        if (!vdp.o_ce && vram_ce_o)
+            vram_address = vram_ad & 8191;
+        if (!vdp.o_ce && !vdp.o_we0)
+            vram[vram_address*2+0] = vram_ad & 255;
+        if (!vdp.o_ce && !vdp.o_we1)
+            vram[vram_address*2+1] = (vram_ad >> 8) & 255;
+        if (!vdp.o_ce && !vdp.o_oe)
+            vram_ad = (vram[vram_address*2+1] << 8) | vram[vram_address*2+0];
+        vram_ce_o = vdp.o_ce;
 
         // 315-5216
         io.input.data = data;
@@ -216,6 +239,9 @@ static void emu_loop(void)
         printf("frame %lld\n", (long long)(mcycles / frame_div));
     }
 
+    if (mcycles & 1)
+        Video_PlotVDP();
+
     if (mcycles > 100000)
         reset = 1;
 
@@ -226,6 +252,7 @@ static void emu_initstate(void)
 {
     nmi = 1;
     reset = 0;
+    mcycles = 0;
 }
 
 int main(int argc, char *argv[])
@@ -240,7 +267,11 @@ int main(int argc, char *argv[])
 
     audio_out = fopen("testaud.raw", "wb");
 
-    while (1)
+    Video_Init("testvid.raw");
+
+    int quit_signal = 0;
+
+    while (!quit_signal)
     {
         emu_loop();
         int bm = 0;
@@ -255,12 +286,34 @@ int main(int argc, char *argv[])
         if (!io.o_ce1 && !rd)
             bm |= 8;
 
-        if (bm == 14)
-            bm *= 1;
+        // Handle events
+
+        SDL_Event sdl_event;
+        while (SDL_PollEvent(&sdl_event))
+        {
+            switch (sdl_event.type)
+            {
+            case SDL_QUIT:
+                quit_signal = 1;
+                break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+                break;
+            default:
+                break;
+            }
+        }
+
+        //Video_Blit();
 
         //if (reset)
         //    printf("cycle: %llu rst: %i zclk: %i addr: %x data %x bm %x\n", mcycles, reset, vdp.o_zclk, address, data, bm);
     }
 
     fclose(audio_out);
+    Video_Shutdown();
+
+    SDL_Quit();
+
+    return 0;
 }

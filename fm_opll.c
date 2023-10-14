@@ -1813,6 +1813,4 @@ void FMOPLL_Clock2(fm_opll_t *chip)
     chip->o_input = chip->input;
     FMOPLL_Clock(chip);
     FMOPLL_Clock(chip);
-    FMOPLL_Clock(chip);
-    FMOPLL_Clock(chip);
 }

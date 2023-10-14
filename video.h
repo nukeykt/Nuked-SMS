@@ -21,8 +21,8 @@
 
 #define VERSION "1.0"
 
-#define VID_WIDTH 400
-#define VID_HEIGHT 300
+#define VID_WIDTH 340
+#define VID_HEIGHT 270
 
 void Video_Init(char* videoout_filename);
 void Video_Shutdown(void);

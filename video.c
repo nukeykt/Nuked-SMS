@@ -167,7 +167,7 @@ void Video_UpdateTitle(uint64_t ms)
     int _s = (int)(ms / 1000);
     int mn = _s / 60;
     _s %= 60;
-    SDL_snprintf(buffer, sizeof(buffer), "Nuked MD v" VERSION " [%i:%02i:%03i]", mn, _s, _ms);
+    SDL_snprintf(buffer, sizeof(buffer), "Nuked SMS v" VERSION " [%i:%02i:%03i]", mn, _s, _ms);
     buffer[99] = 0;
 
     if (!vid_window)

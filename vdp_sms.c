@@ -2365,13 +2365,13 @@ void VDPSMS_Clock(vdpsms_t *chip)
         chip->color_index = chip->sprite1[3].w568;
     if (chip->sprite1[3].w606)
         chip->color_index = chip->sprite1[3].w639[2];
-    if (chip->sprite2[0].w640)
+    if (chip->sprite2[0].w638)
         chip->color_index = chip->sprite2[0].w637[2];
-    if (chip->sprite2[1].w640)
+    if (chip->sprite2[1].w638)
         chip->color_index = chip->sprite2[1].w637[2];
-    if (chip->sprite2[2].w640)
+    if (chip->sprite2[2].w638)
         chip->color_index = chip->sprite2[2].w637[2];
-    if (chip->sprite2[3].w640)
+    if (chip->sprite2[3].w638)
         chip->color_index = chip->sprite2[3].w637[2];
 
     if (chip->hclk2)
@@ -2630,9 +2630,6 @@ static void VDPSMS_VRAMAddressCalc(vdpsms_t *chip)
         vram_calc(&update, &value, 0x18, (chip->w522[0] & 8) | (((chip->w313 & 2) ^ 2) << 3));
     if (chip->w540)
         vram_calc(&update, &value, 0x2, (chip->w537[1] & 2) ^ 2);
-
-    if (chip->reg_addr == 0x3800)
-        chip->reg_addr += 0;
 
     chip->vram_address &= ~update;
     chip->vram_address |= value & update;

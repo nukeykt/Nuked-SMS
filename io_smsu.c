@@ -91,7 +91,7 @@ void IO_SMSU_Clock(io_smsu_t *chip)
 
     chip->o_data = 0;
 
-    if (!chip->input.a0)
+    if (chip->input.a0)
     {
         if (chip->input.port_b & PORT_BUTTON_LEFT)
             chip->o_data |= 1;

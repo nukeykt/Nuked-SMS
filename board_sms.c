@@ -7,10 +7,12 @@
 #include "fm_opll.h"
 #include "io_smsu.h"
 #include "video.h"
+#include "cartridge.h"
+#include "controller.h"
 
 unsigned char ram[8192];
 
-unsigned char rom[8192];
+unsigned char bios[8192];
 
 unsigned char vram[16384];
 int vram_address;
@@ -65,7 +67,7 @@ int load_bios_rom(char *filename)
         return 1;
     }
 
-    ret = fread(rom, 1, ROM_SIZE, romf);
+    ret = fread(bios, 1, ROM_SIZE, romf);
     if (ret < ROM_SIZE)
     {
         fclose(romf);
@@ -117,7 +119,7 @@ static void emu_loop(void)
         if (!io.o_data_dir)
             data = io.o_data;
         if (!io.o_ce0 && !vdp.o_exm2)
-            data = rom[address & 8191];
+            data = bios[address & 8191];
         if (!io.o_ce1 && !rd)
             data = ram[address & 8191];
 
@@ -176,8 +178,8 @@ static void emu_loop(void)
         io.input.killga = 0;
         io.input.csram = vdp.o_csram;
         io.input.reset = reset;
-        io.input.port_a = 127;
-        io.input.port_b = 127;
+        io.input.port_a = controller_handle_3button((io.o_port_a & 64) != 0 || (io.o_port_a_d & 64) != 0, 0);
+        io.input.port_b = controller_handle_3button((io.o_port_b & 64) != 0 || (io.o_port_b_d & 64) != 0, 0);
 
         IO_SMSU_Clock2(&io);
 
@@ -190,6 +192,8 @@ static void emu_loop(void)
         fm.input.cs = (address & 0xfe) != 0xf0 || iorq;
         fm.input.ic = !reset;
         FMOPLL_Clock2(&fm);
+
+        cart_handle();
     }
 
     {
@@ -259,11 +263,11 @@ int main(int argc, char *argv[])
 {
     int i;
     emu_initstate();
-    load_bios_rom("rom.bin");
+    load_bios_rom("bios.bin");
+    bios[0x12e] = 0xc9;
     //load_bios_rom("rom_md.sms");
 
-
-    rom[0x12e] = 0xc9;
+    //cart_load_game_rom("sonic.sms");
 
     audio_out = fopen("testaud.raw", "wb");
 
@@ -298,6 +302,7 @@ int main(int argc, char *argv[])
                 break;
             case SDL_KEYDOWN:
             case SDL_KEYUP:
+                controller_sdl_event(sdl_event.key.keysym.scancode, sdl_event.type == SDL_KEYDOWN);
                 break;
             default:
                 break;

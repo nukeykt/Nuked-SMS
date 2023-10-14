@@ -428,11 +428,11 @@ void VDPSMS_Clock(vdpsms_t *chip)
     if (chip->hclk2)
         chip->w90[1] = chip->w90[0];
 
-    chip->w91 = !((chip->w90[1] & 1) != 0 || (chip->w90[1] & 2) == 0 || !chip->w89[1]);
-    chip->w92 = !((chip->w90[1] & 1) == 0 || (chip->w90[1] & 2) == 0 || !chip->w89[1]);
+    chip->w91 = !((chip->w90[1] & 2) != 0 || (chip->w90[1] & 1) == 0 || !chip->w89[1]);
+    chip->w92 = !((chip->w90[1] & 2) == 0 || (chip->w90[1] & 1) == 0 || !chip->w89[1]);
 
     chip->w93 = chip->w91;
-    chip->w94 = chip->w93;
+    chip->w94 = chip->w92;
 
     chip->w95 = !(chip->w98 || chip->reg_80_b2);
 
@@ -1196,7 +1196,7 @@ void VDPSMS_Clock(vdpsms_t *chip)
         chip->w286 = chip->w286;
 
     if (chip->hclk1)
-        chip->w287 = chip->w287;
+        chip->w287 = chip->w276;
 
     if (chip->hclk1)
         chip->w288 = chip->w359[1];
@@ -1894,7 +1894,7 @@ void VDPSMS_Clock(vdpsms_t *chip)
     if (chip->hclk2)
         chip->w443 = chip->w441 == 0;
 
-    chip->w444 = !(chip->w443 || (chip->w427[1] & 2) != 0);
+    chip->w444 = !(chip->w443 || (chip->w427[1] & 2) == 0);
 
     chip->w445 = chip->reg_80_b2 && chip->w358[1];
     chip->w446 = chip->reg_80_b2 && chip->w359[1];
@@ -2119,7 +2119,7 @@ void VDPSMS_Clock(vdpsms_t *chip)
 
     chip->w518 = chip->w517;
 
-    chip->w519 = !chip->w518 && !chip->w508;
+    chip->w519 = chip->w518 && !chip->w508;
 
     if (chip->hclk1)
         chip->w520[0] = chip->w489;
@@ -2207,7 +2207,7 @@ void VDPSMS_Clock(vdpsms_t *chip)
     chip->w545[1] = !chip->w536 && (chip->w537[1] & 2) != 0;
     chip->w545[2] = !chip->w536 && (chip->w537[1] & 1) != 0;
     chip->w545[3] = !chip->w536 && (chip->w537[1] & 3) == 0;
-    chip->w545[4] = !chip->w536 && !chip->w120;
+    chip->w545[4] = !chip->w536 && (chip->w537[1] & 1) != 0 && !chip->w120;
 
     if (chip->hclk1)
         chip->w546[0] = chip->w545[0];
@@ -2339,10 +2339,10 @@ void VDPSMS_Clock(vdpsms_t *chip)
     chip->sprite2[1].i2 = chip->w553[5][3];
     chip->sprite2[2].i2 = chip->w553[6][3];
     chip->sprite2[3].i2 = chip->w553[7][3];
-    chip->sprite2[0].i3 = (chip->w303[1] & 1) != 0;
-    chip->sprite2[1].i3 = (chip->w303[1] & 2) != 0;
-    chip->sprite2[2].i3 = (chip->w303[1] & 4) != 0;
-    chip->sprite2[3].i3 = (chip->w303[1] & 8) != 0;
+    chip->sprite2[0].i3 = (chip->w303[1] & 16) != 0;
+    chip->sprite2[1].i3 = (chip->w303[1] & 32) != 0;
+    chip->sprite2[2].i3 = (chip->w303[1] & 64) != 0;
+    chip->sprite2[3].i3 = (chip->w303[1] & 128) != 0;
 
     VDPSMS_ClockSprite2(chip, &chip->sprite2[0]);
     VDPSMS_ClockSprite2(chip, &chip->sprite2[1]);

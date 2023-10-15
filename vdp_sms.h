@@ -718,6 +718,7 @@ typedef struct {
     int w500[2];
     int w501[6];
     int w502;
+    int w502t;
     int w503;
     int w504[2];
     int w505;

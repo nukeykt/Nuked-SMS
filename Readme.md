@@ -26,3 +26,6 @@ Additionally YM2413 is emulated.
 * https://siliconpr0n.org/map/konami/vrc-vii-053982/mcmaster_mz_mit20x/ (John McMaster)
 * https://twitter.com/travisgoodspeed/status/1660312214945792001 (Travis Goodspeed)
 
+## Progress
+
+![progress](progress.png)

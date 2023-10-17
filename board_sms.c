@@ -47,11 +47,11 @@ int snd_buf_cnt = 0;
 FILE *audio_out;
 
 
-#define ROM_SIZE 8192
+#define ROM_BIOS_SIZE 8192
 
 int load_bios_rom(char *filename)
 {
-    int ret;
+    size_t ret;
     FILE* romf;
 
     romf = fopen(filename, "rb");
@@ -61,14 +61,14 @@ int load_bios_rom(char *filename)
     fseek(romf, 0, SEEK_END);
     size_t siz = ftell(romf);
     rewind(romf);
-    if (siz < ROM_SIZE)
+    if (siz < ROM_BIOS_SIZE)
     {
         fclose(romf);
         return 1;
     }
 
-    ret = fread(bios, 1, ROM_SIZE, romf);
-    if (ret < ROM_SIZE)
+    ret = fread(bios, 1, ROM_BIOS_SIZE, romf);
+    if (ret < ROM_BIOS_SIZE)
     {
         fclose(romf);
         return 1;
@@ -261,7 +261,6 @@ static void emu_initstate(void)
 
 int main(int argc, char *argv[])
 {
-    int i;
     emu_initstate();
     load_bios_rom("bios.bin");
     bios[0x12e] = 0xc9;

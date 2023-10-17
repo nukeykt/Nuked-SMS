@@ -1,0 +1,8 @@
+.vs
+packages
+Debug
+Release
+x64
+*.vcxproj.user
+*.bin
+*.raw

@@ -71,7 +71,10 @@ void Video_Init(char* videoout_filename)
 
 void Video_Shutdown(void)
 {
-    fclose(vid_dump_file);
+    if (vid_dump_file) {
+        fclose(vid_dump_file);
+        vid_dump_file = NULL;
+    }
 }
 
 void Video_Blit(void)

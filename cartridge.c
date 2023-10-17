@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <memory.h>
 #include "cartridge.h"
 #include "io_smsu.h"
 #include "vdp_sms.h"
@@ -17,7 +18,7 @@ extern int wr, rd;
 
 int cart_load_game_rom(char *filename)
 {
-    int i, ret;
+    size_t ret;
     FILE* romfile;
 
     romfile = fopen(filename, "rb");

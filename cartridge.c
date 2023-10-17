@@ -4,6 +4,8 @@
 #include "io_smsu.h"
 #include "vdp_sms.h"
 
+#define ROM_SIZE (4 * 1024 * 1024)
+
 unsigned char rom[ROM_SIZE];
 
 int m3_mapper_enable;
@@ -86,7 +88,7 @@ void cart_handle(void)
                         enable = 1;
                     }
                 }
-                address_ &= 0x3fffff;
+                address_ &= (ROM_SIZE-1);
             }
             if (enable)
             {
@@ -109,9 +111,9 @@ void cart_handle(void)
                     int page;
 
                     // GPGX
-                    page = data & 15;
+                    page = data & 255;
                     if (m3_mapper_data & 3)
-                        page = (page + ((4 - (m3_mapper_data & 3)) << 3)) & 15;
+                        page = (page + ((4 - (m3_mapper_data & 3)) << 3)) & 255;
                     if ((address & 3) == 0)
                         m3_mapper_data = data & 0xff;
                     if ((address & 3) == 1)

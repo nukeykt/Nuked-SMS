@@ -718,7 +718,6 @@ typedef struct {
     int w500[2];
     int w501[6];
     int w502;
-    int w502t;
     int w503;
     int w504[2];
     int w505;
@@ -935,6 +934,9 @@ typedef struct {
 
     int o_data;
     int o_data_z;
+
+
+    int dbg_address;
 } vdpsms_t;
 
 void VDPSMS_Clock2(vdpsms_t *chip);

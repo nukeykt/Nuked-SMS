@@ -831,6 +831,8 @@ void VDPSMS_Clock(vdpsms_t *chip)
     if (!chip->w183)
     {
         chip->w214 = chip->w213 = chip->io_data & 255;
+        chip->dbg_address &= ~255;
+        chip->dbg_address |= (chip->io_data) & 255;
     }
     else
     {
@@ -862,6 +864,8 @@ void VDPSMS_Clock(vdpsms_t *chip)
     {
         chip->w217 = chip->w216 = chip->io_data & 63;
         chip->reg_code = (chip->io_data >> 6) & 3;
+        chip->dbg_address &= ~0x3f00;
+        chip->dbg_address |= (chip->io_data << 8) & 0x3f00;
     }
     else
     {
@@ -1135,6 +1139,21 @@ void VDPSMS_Clock(vdpsms_t *chip)
         chip->vram_data = chip->w270;
     if (!chip->w269)
         chip->io_data = chip->w270;
+
+#if 0
+    {
+        static int sss;
+        static int sss2;
+        extern unsigned char vram[];
+        if (!chip->w269)
+            sss2 = chip->w270;
+        if (!sss && chip->w269)
+        {
+            printf("read: %x %x %x\n", chip->dbg_address, sss2, vram[chip->dbg_address]);
+        }
+        sss = chip->w269;
+    }
+#endif
 
     chip->w271 = !(chip->reg_81_b2 || chip->w253);
 

@@ -164,6 +164,32 @@ static void emu_loop(void)
             vram_ad = (vram[vram_address*2+1] << 8) | vram[vram_address*2+0];
         vram_ce_o = vdp.o_ce;
 
+#if 0
+        {
+            static int o;
+            static int va;
+            static int vd;
+
+            if (!o && ((vdp.o_we0 && vdp.o_we1) || vdp.o_ce))
+            {
+                printf("write %x %x\n", va, vd);
+            }
+
+            if (!vdp.o_we0)
+            {
+                va = vram_address * 2 + 0;
+                vd = (vram_ad >> 0) & 255;
+            }
+            if (!vdp.o_we1)
+            {
+                va = vram_address * 2 + 1;
+                vd = (vram_ad >> 8) & 255;
+            }
+
+            o = (vdp.o_we0 && vdp.o_we1) || vdp.o_ce;
+        }
+#endif
+
         // 315-5216
         io.input.data = data;
         io.input.a0 = (address & 1) != 0;
@@ -254,16 +280,28 @@ static void emu_loop(void)
 
 static void emu_initstate(void)
 {
+    int i;
+
+
     nmi = 1;
     reset = 0;
     mcycles = 0;
+
+    vdp.reg_ct = 255; // HACK
+    vdp.reg_bg = 7; // HACK
+
+    for (i = 0; i < 12; i++) // HACK
+    {
+        z80.regs_[i][0] = 0x0000;
+        z80.regs_[i][1] = 0xffff;
+    }
 }
 
 int main(int argc, char *argv[])
 {
     emu_initstate();
     load_bios_rom("bios.bin");
-    bios[0x12e] = 0xc9;
+    //bios[0x12e] = 0xc9;
     //load_bios_rom("rom_md.sms");
 
     //cart_load_game_rom("sonic.sms");

@@ -50,7 +50,7 @@ void Video_Init(char* videoout_filename)
     vid_counter = vid_counter_write = 0;
 
     vid_window = SDL_CreateWindow("Nuked SMS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        VID_WIDTH * 2, VID_HEIGHT * 2, SDL_WINDOW_SHOWN);
+        VID_WIDTH, VID_HEIGHT * 2, SDL_WINDOW_SHOWN);
     if (!vid_window)
         return;
 
@@ -147,7 +147,7 @@ void Video_PlotVDP(void)
         csync_cnt++;
     }
 
-    if (plot_x >= 0 && plot_x < VID_WIDTH * 2 && plot_y >= 0 && plot_y < VID_HEIGHT && vdp.o_csync)
+    if (plot_x >= 0 && plot_x < VID_WIDTH && plot_y >= 0 && plot_y < VID_HEIGHT/* && vdp.o_csync*/)
     {
         uint32_t abgr = 0;
 
@@ -155,7 +155,7 @@ void Video_PlotVDP(void)
         abgr |= vdp.o_dac_g << 8;
         abgr |= vdp.o_dac_b << 16;
 
-        vid_workbuffer[plot_y][plot_x / 2] = abgr;
+        vid_workbuffer[plot_y][plot_x] = abgr;
     }
 
     plot_x++;

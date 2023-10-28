@@ -4,8 +4,8 @@
 #define PORT_BUTTON_DOWN    2
 #define PORT_BUTTON_LEFT    4
 #define PORT_BUTTON_RIGHT   8
-#define PORT_BUTTON_TR      16
-#define PORT_BUTTON_TL      32
+#define PORT_BUTTON_TL      16
+#define PORT_BUTTON_TR      32
 #define PORT_BUTTON_TH      64
 
 typedef struct {

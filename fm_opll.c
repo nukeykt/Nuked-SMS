@@ -56,9 +56,9 @@ void FMOPLL_Prescaler(fm_opll_t *chip)
 {
     if (!chip->input.mclk)
     {
-        chip->ic_latch[0] = chip->input.ic;
+        chip->ic_latch[0] = (chip->ic_latch[1] << 1) | chip->input.ic;
         chip->prescaler_cnt[0] = (chip->prescaler_cnt[1] + 1) & 3;
-        if (chip->input.ic && !chip->ic_latch[1])
+        if (chip->input.ic && !(chip->ic_latch[1] & 2))
         {
             chip->prescaler_cnt[0] = 0;
         }
@@ -457,10 +457,8 @@ void FMOPLL_UpdateIO2(fm_opll_t *chip)
     }
     if (chip->clk1)
     {
-        chip->write0_latch[3] = chip->write0_latch[3];
         chip->write0_latch[4] = chip->write0_latch[3];
 
-        chip->write1_latch[3] = chip->write1_latch[3];
         chip->write1_latch[4] = chip->write1_latch[3];
     }
     if (chip->clk2)
@@ -818,9 +816,9 @@ void FMOPLL_Vibrato(fm_opll_t *chip)
         if (chip->vibrato_latch)
         {
             if ((chip->vib_cnt[1] & 3) == 2)
-                vib_val = (chip->fnum >> 6) & 7;
+                vib_val = (chip->fnum_latch[1] >> 6) & 7;
             if ((chip->vib_cnt[1] & 1) == 1)
-                vib_val = (chip->fnum >> 7) & 3;
+                vib_val = (chip->fnum_latch[1] >> 7) & 3;
             if (chip->vib_cnt[1] & 4)
             {
                 vib_val = (vib_val ^ 7) | 0b1111111000;
@@ -1631,7 +1629,7 @@ void FMOPLL_Operator(fm_opll_t *chip)
             if (chip->fsm_out[2])
                 bit = (out >> i) & 1;
             else
-                bit = (chip->op_fb[0][i][1] >> 8) & 1;
+                bit = (chip->op_fb[1][i][1] >> 8) & 1;
             chip->op_fb[0][i][0] |= bit;
             chip->op_fb[1][i][0] = chip->op_fb[1][i][1] << 1;
             if (chip->fsm_out[2])

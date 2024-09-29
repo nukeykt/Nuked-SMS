@@ -1569,6 +1569,7 @@ void FMOPLL_Operator(fm_opll_t *chip)
         if (chip->fb_latch && chip->mc_latch[1])
         {
             int fbmod = chip->op_fbmod[1];
+            fbmod &= 4095;
             if (fbmod & 2048)
                 fbmod |= ~2047;
 
@@ -1629,7 +1630,7 @@ void FMOPLL_Operator(fm_opll_t *chip)
             if (chip->fsm_out[2])
                 bit = (out >> i) & 1;
             else
-                bit = (chip->op_fb[1][i][1] >> 8) & 1;
+                bit = (chip->op_fb[0][i][1] >> 8) & 1;
             chip->op_fb[0][i][0] |= bit;
             chip->op_fb[1][i][0] = chip->op_fb[1][i][1] << 1;
             if (chip->fsm_out[2])

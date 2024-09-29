@@ -263,7 +263,6 @@ typedef struct {
     int w58;
     int w59;
     int w60;
-    int w61;
     int w62;
     int w63;
     int w64;
